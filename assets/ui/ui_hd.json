@@ -1,0 +1,182 @@
+{
+ "hud_frame": {
+  "hd": [
+   332,
+   284
+  ],
+  "display": [
+   83,
+   71
+  ]
+ },
+ "hp_bar_frame": {
+  "hd": [
+   880,
+   80
+  ],
+  "display": [
+   220,
+   20
+  ]
+ },
+ "hp_fill": {
+  "hd": [
+   880,
+   80
+  ],
+  "display": [
+   220,
+   20
+  ]
+ },
+ "xp_bar_frame": {
+  "hd": [
+   880,
+   32
+  ],
+  "display": [
+   220,
+   8
+  ]
+ },
+ "xp_fill": {
+  "hd": [
+   880,
+   32
+  ],
+  "display": [
+   220,
+   8
+  ]
+ },
+ "ability_slot": {
+  "hd": [
+   288,
+   288
+  ],
+  "display": [
+   72,
+   72
+  ]
+ },
+ "pause_button": {
+  "hd": [
+   264,
+   264
+  ],
+  "display": [
+   66,
+   66
+  ]
+ },
+ "panel_pause": {
+  "hd": [
+   1664,
+   1260
+  ],
+  "display": [
+   416,
+   315
+  ]
+ },
+ "button_home": {
+  "hd": [
+   336,
+   128
+  ],
+  "display": [
+   84,
+   32
+  ]
+ },
+ "button_home_hover": {
+  "hd": [
+   336,
+   128
+  ],
+  "display": [
+   84,
+   32
+  ]
+ },
+ "joy_base": {
+  "hd": [
+   512,
+   512
+  ],
+  "display": [
+   128,
+   128
+  ]
+ },
+ "joy_knob": {
+  "hd": [
+   240,
+   240
+  ],
+  "display": [
+   60,
+   60
+  ]
+ },
+ "icon_axe_cleave": {
+  "hd": [
+   224,
+   224
+  ],
+  "display": [
+   56,
+   56
+  ]
+ },
+ "icon_whirlwind": {
+  "hd": [
+   224,
+   224
+  ],
+  "display": [
+   56,
+   56
+  ]
+ },
+ "icon_war_stomp": {
+  "hd": [
+   224,
+   224
+  ],
+  "display": [
+   56,
+   56
+  ]
+ },
+ "icon_rage_roar": {
+  "hd": [
+   224,
+   224
+  ],
+  "display": [
+   56,
+   56
+  ]
+ },
+ "chip_wave": {
+  "hd": [
+   480,
+   112
+  ],
+  "display": [
+   120,
+   28
+  ]
+ },
+ "chip_timer": {
+  "hd": [
+   248,
+   112
+  ],
+  "display": [
+   62,
+   28
+  ]
+ }
+}
