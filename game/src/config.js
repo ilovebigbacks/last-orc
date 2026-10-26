@@ -9,7 +9,8 @@ window.MENU_PIECES = { background:'background.png', logo:'logo.png', orc_rock:'o
 window.FRAME = { normal:'_normal', hover:'_hover' };
 window.LAYOUT_KEYS = { background:'background', logo:'logo', orc_rock:'orc_on_rock', panel:'panel', panel_options:'panel_options', background_options:'background_options', logo_options:'logo_options', orc_options:'orc_options', cursor:'cursor_skull', cursor_options:'cursor_skull_options',
   button:id=>'button_'+id, track:{music:'slider_track',sfx:'slider_track_sfx'}, handle:{music:'slider_handle',sfx:'slider_handle_sfx'}, fillInner:'slider_fill_inner' };
-window.SLIDER = { innerX:181, innerW:198, fillPad:21, fillH:39, handleOffset:-0.5, fillExtra:18 };
+window.SLIDER = { trackW:240, fillH:39, handleW:39, frameL:21, frameR:21, endRamp:0.05 };
+// fill crop 0..trackW (0 => none, 1 => full); handle left edge moves within inner frame [frameL, trackW-frameR-handleW] (relative to track x)
 window.MENU_CURSOR_X = 60;  // main-menu skull x override (Options BACK skull stays at layout.json x)  // innerX/innerW overridden by layout.json slider_fill_inner if present
 window.ORC_BOB_OPTIONS = 0;  // bob px on Options
 window.ORC_BOB = { px:0, ms:1400 };  // idle bob for orc_on_rock (set px:0 to disable)

@@ -46,10 +46,12 @@ class Menu extends Phaser.Scene{constructor(){super('Menu')}
 const txt=(s,x,y,t,sz=28,c='#e8d8b0')=>s.add.text(x,y,t,{fontFamily:'monospace',fontSize:sz,color:c}).setOrigin(.5);
 class Options extends Phaser.Scene{constructor(){super('Options')}
  create(){drawBackdrop(this,'fb_options','panel_options');AUDIO.start();this.input.keyboard.on('keydown-ESC',()=>this.scene.start('Menu'));
-  if(PIECES){const fi=LJ[K.fillInner]||{},S=Object.assign({},SLIDER,fi.x!=null?{innerX:fi.x}:{},fi.w!=null?{innerW:fi.w}:{});
+  if(PIECES){const S=SLIDER;window.SLIDERS={};
    for(const ch of['music','sfx']){    const tr=at(this,K.track[ch],'menu_slider_track'),fill=at(this,K.track[ch],'menu_slider_fill'),h=at(this,K.handle[ch],'menu_slider_handle').setInteractive({useHandCursor:true,draggable:true});
-    const set=v=>{v=Phaser.Math.Clamp(v,0,1);AUDIO.setVol(ch,v);fill.setCrop(0,0,S.fillPad+S.innerW*v+S.fillExtra,S.fillH);h.x=S.innerX+S.innerW*v+S.handleOffset};set(AUDIO.vol[ch]);
-    const fromX=x=>set((x-S.innerX)/S.innerW);h.on('drag',p=>fromX(p.x));h.on('dragend',()=>ch==='sfx'&&AUDIO.blip());
+    const tx=LJ[K.track[ch]].x,hMin=tx+S.frameL,hRange=S.trackW-S.frameL-S.frameR-S.handleW,hc=v=>hMin+hRange*v+S.handleW/2-tx;
+    const fillW=v=>{const a=S.endRamp,mid=u=>hc(u);if(v<=0)return 0;if(v>=1)return S.trackW;if(v<a)return mid(a)*v/a;if(v>1-a)return mid(1-a)+(S.trackW-mid(1-a))*(v-(1-a))/a;return mid(v)};
+    const set=v=>{v=Phaser.Math.Clamp(v,0,1);AUDIO.setVol(ch,v);const w=Phaser.Math.Clamp(fillW(v),0,S.trackW);fill.setCrop(0,0,w,S.fillH).setVisible(w>0);h.x=hMin+hRange*v;SLIDERS[ch]={v,fillW:w,handleX:h.x,handleR:h.x+S.handleW,trackX:tx}};set(AUDIO.vol[ch]);
+    const fromX=x=>set((x-(hMin+S.handleW/2))/hRange);h.on('drag',p=>fromX(p.x));h.on('dragend',()=>ch==='sfx'&&AUDIO.blip());
     tr.setInteractive({useHandCursor:true}).on('pointerdown',p=>{fromX(p.x);if(ch==='sfx')AUDIO.blip()})}
    const bc=this.textures.exists('menu_cursor_options')&&LJ[K.cursor_options]?at(this,K.cursor_options,'menu_cursor_options').setOrigin(0):null;pieceButton(this,'back',bc,()=>{AUDIO.blip();this.scene.start('Menu')});return}
   const pcs=PIECES&&this.textures.exists('menu_slider_track');
@@ -83,5 +85,5 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   const d=dashing?this.face:v.normalize();this.rage.setVelocity(d.x*sp,d.y*sp).setAlpha(dashing?.6:1);
   if(v.x)this.rage.setFlipX(v.x<0);
   const cd=Math.max(0,this.dashReady-t);this.hud.setText(`RAGE  |  WASD/Arrows move  Space dash ${cd?(cd/1000).toFixed(1)+'s':'READY'}  |  Q/W/E/R: soon  |  Esc menu`)}}
-new Phaser.Game({type:Phaser.AUTO,width:W,height:H,pixelArt:true,roundPixels:true,backgroundColor:'#000',
+window.GAME=new Phaser.Game({type:Phaser.AUTO,width:W,height:H,pixelArt:true,roundPixels:true,backgroundColor:'#000',
  scale:{mode:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},physics:{default:'arcade'},scene:[Boot,Menu,Options,Quit,Game]});
