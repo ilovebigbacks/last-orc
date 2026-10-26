@@ -10,11 +10,13 @@ class Boot extends Phaser.Scene{constructor(){super('Boot')}
    for(let i=0;i<40;i++){g.fillStyle([0x3a3826,0x24231a,0x3d2f22,0x2f3a22][i%4]).fillRect(Math.random()*t|0,Math.random()*t|0,4,4)}
    g.generateTexture('ground',t,t);g.clear()}
 
-  window.LJ_L=this.cache.json.get('menu_layout')||null;window.LJ_P=this.cache.json.get('menu_layout_portrait')||null;window.LJ=LJ_L;genWorldTextures(this);window.LAYOUT=DEFAULT_LAYOUT;
+  window.LJ_L=this.cache.json.get('menu_layout')||null;window.LJ_P=this.cache.json.get('menu_layout_portrait')||null;window.LJ=LJ_L;genWorldTextures(this);for(const k of Object.keys(UI_DISP))if(this.textures.exists(k))this.textures.get(k).setFilter(Phaser.Textures.FilterMode.LINEAR);window.LAYOUT=DEFAULT_LAYOUT;
   window.PIECES=!!LJ&&['background','logo','panel','panel_options','buttons','slider_track','slider_fill','slider_handle'].every(k=>this.textures.exists('menu_'+k));
   this.scene.start('Menu')}}
 // finger-sized hit area (>= TOUCH.minTap game px) centred on an origin-0 image
 const padHit=(w,h,m=TOUCH.minTap)=>{const W2=Math.max(w,m),H2=Math.max(h,m);return new Phaser.Geom.Rectangle((w-W2)/2,(h-H2)/2,W2,H2)};
+// same, for an image scaled by uiFit (hit areas are in texture px)
+const padHitS=(img,w,h)=>{const r=padHit(w,h),k=1/img.scaleX;return new Phaser.Geom.Rectangle(r.x*k,r.y*k,r.width*k,r.height*k)};
 // Skull slider (shared by Options + Pause). Fill crop follows handle x every frame (see SLIDER in config).
 function skullSlider(s,ch,tx,ty,hy){const S=SLIDER;window.SLIDERS=window.SLIDERS||{};
  const tr=s.add.image(tx,ty,'menu_slider_track').setOrigin(0),fill=s.add.image(tx,ty,'menu_slider_fill').setOrigin(0),h=s.add.image(0,hy,'menu_slider_handle').setOrigin(0);
@@ -22,14 +24,14 @@ function skullSlider(s,ch,tx,ty,hy){const S=SLIDER;window.SLIDERS=window.SLIDERS
  const hMin=tx+S.handleMin,hRange=S.handleMax-S.handleMin;
  const sync=()=>{const v=AUDIO.vol[ch],w=v<=0?0:Phaser.Math.Clamp(Math.round(h.x)-tx+S.redEnd,0,S.trackW);fill.setCrop(0,0,w,S.fillH).setVisible(w>0);SLIDERS[ch]={v,fillW:w,handleX:h.x,handleR:h.x+S.handleW,trackX:tx,handleY:h.y+(h.originY===0?20:0)}};
  const set=v=>{v=Phaser.Math.Clamp(v,0,1);AUDIO.setVol(ch,v);h.x=Math.round(hMin+hRange*v);sync()};s.events.on('update',sync);set(AUDIO.vol[ch]);
- const fromX=x=>set((x-(hMin+S.handleW/2))/hRange);h.on('drag',p=>fromX(p.x));h.on('dragend',()=>ch==='sfx'&&AUDIO.blip());
- tr.setInteractive({useHandCursor:true,hitArea:padHit(S.trackW,S.fillH),hitAreaCallback:Phaser.Geom.Rectangle.Contains}).on('pointerdown',p=>{fromX(p.x);if(ch==='sfx')AUDIO.blip()});return {track:tr,fill,handle:h,set}}
+ const fromX=x=>set((x-(hMin+S.handleW/2))/hRange);h.on('drag',p=>fromX(PX(p)));h.on('dragend',()=>ch==='sfx'&&AUDIO.blip());
+ tr.setInteractive({useHandCursor:true,hitArea:padHit(S.trackW,S.fillH),hitAreaCallback:Phaser.Geom.Rectangle.Contains}).on('pointerdown',p=>{fromX(PX(p));if(ch==='sfx')AUDIO.blip()});return {track:tr,fill,handle:h,set}}
 const R=(s,r)=>s.add.rectangle(r.x+r.w/2,r.y+r.h/2,r.w,r.h,0xffffff,0);
-const K=LAYOUT_KEYS,at=(s,key,tex,frame)=>{const r=LJ[key];if(r.cover){const i=s.add.image(s.scale.width/2,s.scale.height/2,tex,frame);i.setScale(Math.max(s.scale.width/i.width,s.scale.height/i.height));return i}const t=r.tex&&s.textures.exists(r.tex)?r.tex:tex,i=s.add.image(r.x,r.y,t,t===tex?frame:undefined).setOrigin(0).setScale(r.s||1);if(r.crop)i.setCrop(...r.crop);return i};
+const K=LAYOUT_KEYS,at=(s,key,tex,frame)=>{const r=LJ[key];if(r.cover){const i=s.add.image(s.scale.gw/2,s.scale.gh/2,tex,frame);i.setScale(Math.max(s.scale.gw/i.width,s.scale.gh/i.height));return i}const t=r.tex&&s.textures.exists(r.tex)?r.tex:tex,i=s.add.image(r.x,r.y,t,t===tex?frame:undefined).setOrigin(0).setScale(r.s||1);if(r.crop)i.setCrop(...r.crop);return i};
 function drawBackdrop(s,fb,panelKey){if(!PIECES){s.add.image(W/2,H/2,fb).setDisplaySize(W,H);return}
  const opt=panelKey==='panel_options',pick=(k,base)=>opt&&s.textures.exists('menu_'+k)&&LJ[K[k]]?k:base,bob=opt?ORC_BOB_OPTIONS:ORC_BOB.px;
  const bg=pick('background_options','background'),lg=pick('logo_options','logo'),orc=pick('orc_options','orc_rock');
- if(isPortrait(s)&&s.textures.exists('ui_menu_bg_portrait')){const i=s.add.image(s.scale.width/2,s.scale.height/2,'ui_menu_bg_portrait');i.setScale(Math.max(s.scale.width/i.width,s.scale.height/i.height))}else at(s,K[bg],'menu_'+bg);
+ if(isPortrait(s)&&s.textures.exists('ui_menu_bg_portrait')){const i=s.add.image(s.scale.gw/2,s.scale.gh/2,'ui_menu_bg_portrait');i.setScale(Math.max(s.scale.gw/i.width,s.scale.gh/i.height))}else at(s,K[bg],'menu_'+bg);
  if(s.textures.exists('menu_'+orc)&&LJ[K[orc]]){const o=at(s,K[orc],'menu_'+orc);if(bob)s.tweens.add({targets:o,y:o.y-bob,duration:ORC_BOB.ms,yoyo:true,repeat:-1,ease:'Sine.inOut'})}
  at(s,K[lg],'menu_'+lg);at(s,K[panelKey],'menu_'+panelKey)}
 function pieceButton(s,id,cursor,onClick,off,pos){const b=pos?s.add.image(pos.x,pos.y,'menu_buttons',id+FRAME.normal).setOrigin(0):at(s,K.button(id),'menu_buttons',id+FRAME.normal);
@@ -68,9 +70,9 @@ class Options extends Phaser.Scene{constructor(){super('Options')}
   R(this,LAYOUT.back).setInteractive({useHandCursor:true}).on('pointerdown',()=>this.scene.start('Menu'));
   }}
 class Quit extends Phaser.Scene{constructor(){super('Quit')}
- create(){this.cameras.main.setBackgroundColor('#000');txt(this,this.scale.width/2,240,'LAST ORC',56,'#c0392b');
-  txt(this,this.scale.width/2,320,'Thanks for playing. Rage rests... for now.');txt(this,this.scale.width/2,390,'click to return',20,'#888');
+ create(){this.cameras.main.setBackgroundColor('#000');txt(this,this.scale.gw/2,240,'LAST ORC',56,'#c0392b');
+  txt(this,this.scale.gw/2,320,'Thanks for playing. Rage rests... for now.');txt(this,this.scale.gw/2,390,'click to return',20,'#888');
   this.input.once('pointerdown',()=>this.scene.start('Menu'))}}
-const P0=wantPortrait();window.GAME=new Phaser.Game({type:Phaser.AUTO,width:P0?PORTRAIT.base.w:W,height:P0?PORTRAIT.base.h:H,pixelArt:true,roundPixels:true,backgroundColor:'#000',
+const P0=wantPortrait();window.GAME=new Phaser.Game({type:Phaser.AUTO,width:(P0?PORTRAIT.base.w:W)*RS,height:(P0?PORTRAIT.base.h:H)*RS,pixelArt:true,roundPixels:true,backgroundColor:'#000',
  scale:{mode:P0?Phaser.Scale.EXPAND:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},physics:{default:'arcade'},input:{activePointers:3},scene:[Boot,Menu,Options,Quit,Game,Pause]});
 initOrientation(GAME);

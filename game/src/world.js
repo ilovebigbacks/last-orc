@@ -2,21 +2,21 @@
 // Graphics/canvas are used ONLY at boot to generate placeholder textures; no Graphics/Text objects live in the scenes.
 const ORIENT_FORCE=new URLSearchParams(location.search).get('orient');
 const wantPortrait=()=>ORIENT_FORCE?ORIENT_FORCE==='portrait':innerHeight>innerWidth;
-const isPortrait=s=>s.scale.height>s.scale.width;
+const isPortrait=s=>s.scale.gh>s.scale.gw;
 const FONT_CHARS=' 0123456789:/-+.!ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 function applyLayout(s){if(!isPortrait(s)||!window.LJ_P){window.LJ=LJ_L;return}
- const ox=Math.round((s.scale.width-PORTRAIT.base.w)/2),oy=Math.round((s.scale.height-PORTRAIT.base.h)/2),m=Object.assign({},LJ_L);
+ const ox=Math.round((s.scale.gw-PORTRAIT.base.w)/2),oy=Math.round((s.scale.gh-PORTRAIT.base.h)/2),m=Object.assign({},LJ_L);
  for(const[k,v]of Object.entries(LJ_P)){if(k[0]==='_')continue;if(typeof v!=='object'){m[k]=v+ox;continue}m[k]=Object.assign({},v);if('x'in v)m[k].x=v.x+ox;if('y'in v)m[k].y=v.y+oy}
  window.LJ=m}
 // safe-area insets in game px
 function safeInsets(s){let d=document.getElementById('safeprobe');if(!d){d=document.createElement('div');d.id='safeprobe';
   d.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';document.body.appendChild(d)}
- const cs=getComputedStyle(d),k=s.scale.displayScale.x||1,f=p=>Math.ceil((parseFloat(cs[p])||0)*k);
+ const cs=getComputedStyle(d),k=(s.scale.displayScale.x||1)/RS,f=p=>Math.ceil((parseFloat(cs[p])||0)*k);
  return {t:f('paddingTop'),r:f('paddingRight'),b:f('paddingBottom'),l:f('paddingLeft')}}
 const UI_MAP={ability_slot:'slot',pause_button:'pause_btn',joy_base:'joy_base',joy_knob:'joy_knob',hud_frame:'hud_frame',hud_portrait_rage:'hud_portrait_rage',hp_bar_frame:'hp_bar_frame',hp_fill:'bar_hp',xp_bar_frame:'xp_bar_frame',xp_fill:'bar_xp',
  icon_axe_cleave:'icon_axe_cleave',icon_whirlwind:'icon_whirlwind',icon_war_stomp:'icon_war_stomp',icon_rage_roar:'icon_rage_roar',panel_pause:'ui_panel_pause',button_home:'ui_button_home',button_home_hover:'ui_button_home_hover',
- menu_bg_portrait:'ui_menu_bg_portrait',orc_on_rock_portrait:'ui_orc_on_rock_portrait',fx_vignette_portrait:'fx_vignette_portrait',fx_ember:'fx_ember_single'};
-function loadWorldAssets(s){const U='../assets/ui/';for(const[f,k]of Object.entries(UI_MAP))s.load.image(k,U+f+'.png');
+ menu_bg_portrait:'ui_menu_bg_portrait',orc_on_rock_portrait:'ui_orc_on_rock_portrait',fx_vignette_portrait:'fx_vignette_portrait',fx_ember:'fx_ember_single',chip_wave:'chip_wave',chip_timer:'chip_timer'};
+function loadWorldAssets(s){const U='../assets/ui/';for(const[f,k]of Object.entries(UI_MAP)){if(UI_HD[f]){s.load.image(k,U+f+HD_TIER+'.png');UI_DISP[k]=UI_HD[f]}else s.load.image(k,U+f+'.png')}
 for(const[k,f]of Object.entries(RAGE.files))if(f)s.load.spritesheet(RAGE.keys[k],f,{frameWidth:RAGE.frameW,frameHeight:RAGE.frameH});
  for(const m of Object.values(MOOD))if(m.file){if(m.frame)s.load.spritesheet(m.key,m.file,{frameWidth:m.frame,frameHeight:m.frame});else s.load.image(m.key,m.file)}}
 function genWorldTextures(s){const T=s.textures,g=s.make.graphics({},false),mk=(k,w,h,fn)=>{if(T.exists(k))return;g.clear();fn(g);g.generateTexture(k,w,h)};
@@ -62,7 +62,7 @@ function genWorldTextures(s){const T=s.textures,g=s.make.graphics({},false),mk=(
 // sprite text: container of glyph images
 function spriteText(s,x,y,str,scale=1,tint=0xffffff){const c=s.add.container(x,y);c.sc=scale;c.tint=tint;c.setText=t=>{t=String(t).toUpperCase();if(t===c.txt)return c;c.txt=t;
   while(c.list.length<t.length)c.add(s.add.image(0,0,'font','c0').setOrigin(0));
-  c.list.forEach((im,i)=>{if(i<t.length){const j=Math.max(0,FONT_CHARS.indexOf(t[i]));im.setFrame('c'+j).setVisible(true).setPosition(i*9*c.sc,0).setScale(c.sc).setTint(c.tint)}else im.setVisible(false)});c.w=t.length*9*c.sc;return c};return c.setText(str)}
+  c.list.forEach((im,i)=>{if(i<t.length){const j=Math.max(0,FONT_CHARS.indexOf(t[i]));im.setFrame('c'+j).setVisible(true).setPosition(i*9*c.sc,0).setScale(c.sc).setTint(c.tint)}else im.setVisible(false)});c.tw=t.length*9*c.sc;return c};return c.setText(str)}
 const fmtT=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function hash(a,b){let h=(a*374761393+b*668265263)|0;h=(h^(h>>>13))*1274126177|0;return()=>{h=(h+0x6D2B79F5)|0;let t=Math.imul(h^(h>>>15),1|h);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296}}
 
@@ -70,7 +70,7 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
  create(){AUDIO.start();const R_=RAGE;this.st={hp:R_.hp,xp:0,level:1,need:XP.base,wave:1,waveT:0,elapsed:0,kills:0,spawned:0,gemsDropped:0,gemsCollected:0,hits:0,dmg:0,queue:0,spawnAcc:0,waveLog:[]};
   this.physics.world.setBounds(-1e7,-1e7,2e7,2e7);
   this.rage=this.physics.add.sprite(0,0,R_.keys.idle).setOrigin(.5,R_.anchorY);this.rage.body.setSize(28,16).setOffset(10,R_.frameH*R_.anchorY-14);
-  const cam=this.cameras.main;cam.startFollow(this.rage,true,WORLD.camLerp,WORLD.camLerp);cam.setRoundPixels(true);
+  const cam=this.cameras.main;cam.startFollow(this.rage,true,WORLD.camLerp,WORLD.camLerp);cam.setFollowOffset(this.scale.gw/2,this.scale.gh/2);cam.setRoundPixels(true);
   this.chunks=new Map();this.chunkPool=[];this.propPool=[];
   this.enemies=[];this.enemyPool=[];this.gems=[];this.gemPool=[];this.fxPool=[];this.numPool=[];
   // parallax foreground canopy (scrollFactor>1), recycled around the camera
@@ -83,39 +83,41 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   this.events.on('resume',()=>{this.joyEnd()});
   this.fpsS=[];window.WSTATS=this.st;window.WORLD_SCENE=this;
   this.updateChunks(true);this.st.queue=this.waveCount(1);this.st.waveLog.push({wave:1,count:this.st.queue,hpMul:1,speedMul:1})}
- onResize(){this.layoutHUD()}
+ onResize(){this.cameras.main.setFollowOffset(this.scale.gw/2,this.scale.gh/2);this.layoutHUD()}
  openPause(){if(this.over||this.scene.isPaused())return;this.joyEnd();this.scene.pause();this.scene.launch('Pause');AUDIO.blip()}
  waveCount(w){return WAVES.baseCount+WAVES.countPerWave*(w-1)}
  mul(w){return{hp:1+WAVES.hpMulPerWave*(w-1),sp:Math.min(WAVES.maxSpeedMul,1+WAVES.speedMulPerWave*(w-1))}}
  // ---------- HUD (all sprites, scrollFactor 0) ----------
- buildHUD(){const D=1e6,a=(x,y,k)=>this.add.image(x,y,k).setOrigin(0).setScrollFactor(0).setDepth(D);
+ buildHUD(){const D=1e6,a=(x,y,k)=>uiFit(this.add.image(x,y,k)).setOrigin(0).setScrollFactor(0).setDepth(D);
   const h=this.hud={};h.frame=a(0,0,'hud_frame');h.face=a(0,0,this.textures.exists('hud_portrait_rage')?'hud_portrait_rage':RAGE.keys.portrait);h.frame.setDepth(D+0.5);h.badge=a(0,0,'hud_badge');h.lvl=spriteText(this,0,0,'1',1,0xffd060).setScrollFactor(0).setDepth(D+1);
   h.hpBg=a(0,0,'hp_bar_frame');h.hp=a(0,0,'bar_hp');h.hpTxt=spriteText(this,0,0,'',1,0xffffff).setScrollFactor(0).setDepth(D+1);h.xpBg=a(0,0,'xp_bar_frame');h.xp=a(0,0,'bar_xp');h.hp.setDepth(D+0.2);h.xp.setDepth(D+0.2);
-  h.waveBg=a(0,0,'hud_chip').setDisplaySize(124,30);h.wave=spriteText(this,0,0,'WAVE 1',1,0xe8d8b0).setScrollFactor(0).setDepth(D+1);
-  h.timeBg=a(0,0,'hud_chip');h.time=spriteText(this,0,0,'00:00',1,0xe8d8b0).setScrollFactor(0).setDepth(D+1);
-  h.pause=a(0,0,'pause_btn').setInteractive({useHandCursor:true,hitArea:padHit(66,66),hitAreaCallback:Phaser.Geom.Rectangle.Contains}).on('pointerdown',(p,x,y,ev)=>{ev&&ev.stopPropagation&&ev.stopPropagation();this.openPause()});
+  h.waveBg=a(0,0,this.textures.exists('chip_wave')?'chip_wave':'hud_chip');h.wave=spriteText(this,0,0,'WAVE 1',1,0xe8d8b0).setScrollFactor(0).setDepth(D+1);
+  h.timeBg=a(0,0,this.textures.exists('chip_timer')?'chip_timer':'hud_chip');h.time=spriteText(this,0,0,'00:00',1,0xe8d8b0).setScrollFactor(0).setDepth(D+1);
+  h.pause=a(0,0,'pause_btn');h.pause.setInteractive({useHandCursor:true,hitArea:padHitS(h.pause,66,66),hitAreaCallback:Phaser.Geom.Rectangle.Contains}).on('pointerdown',(p,x,y,ev)=>{ev&&ev.stopPropagation&&ev.stopPropagation();this.openPause()});
   h.slots=['Q','W','E','R'].map(k=>{const A=ABILITIES[k],s={k,bg:a(0,0,'slot'),icon:a(0,0,A.icon).setAlpha(A.id==='locked'?0.45:1),cd:a(0,0,'slot_cd').setVisible(false)};return s});
   this.layoutHUD()}
- layoutHUD(){const W=this.scale.width,H=this.scale.height,P=isPortrait(this),L=HUD[P?'portrait':'landscape'],si=P?safeInsets(this):{t:0,r:0,b:0,l:0},h=this.hud;
+ layoutHUD(){const W=this.scale.gw,H=this.scale.gh,P=isPortrait(this),L=HUD[P?'portrait':'landscape'],si=P?safeInsets(this):{t:0,r:0,b:0,l:0},h=this.hud;
   const X=o=>o.right!=null?W-si.r-o.right:si.l+o.x,Y=(o,hh)=>o.bottom!=null?H-si.b-o.bottom-hh:si.t+o.y;
-  const px=si.l+L.portrait.x,py=si.t+L.portrait.y;h.frame.setPosition(px,py);h.face.setPosition(px,py);h.badge.setPosition(px-6,py+46).setVisible(!this.textures.exists('hud_portrait_rage'));h.lvl.setPosition(px+65-(String(this.st?this.st.level:1).length-1)*4,py+55);
+  const px=si.l+L.portrait.x,py=si.t+L.portrait.y;h.frame.setPosition(px,py);h.face.setPosition(px+11,py+7).setDisplaySize(50,52);h.badge.setPosition(px-6,py+46).setVisible(!this.textures.exists('hud_portrait_rage'));h.lvl.setPosition(px+65-(String(this.st?this.st.level:1).length-1)*4,py+55);
   h.hpBg.setPosition(si.l+L.hp.x,si.t+L.hp.y);h.hp.setPosition(si.l+L.hp.x,si.t+L.hp.y);h.hpTxt.setPosition(si.l+L.hp.x+70,si.t+L.hp.y+3);
   h.xpBg.setPosition(si.l+L.xp.x,si.t+L.xp.y);h.xp.setPosition(si.l+L.xp.x,si.t+L.xp.y);
-  h.waveBg.setPosition(X(L.wave)-(P?0:66),Y(L.wave,30));h.wave.setPosition(h.waveBg.x+12,h.waveBg.y+8);h.timeBg.setPosition(X(L.timer)-(P?0:66),Y(L.timer,30));h.time.setPosition(h.timeBg.x+9,h.timeBg.y+8);
-  if(P){h.waveBg.setPosition(W-si.r-12-124,si.t+12);h.wave.setPosition(h.waveBg.x+12,h.waveBg.y+8);h.timeBg.setPosition(W-si.r-12-64,si.t+48);h.time.setPosition(h.timeBg.x+9,h.timeBg.y+8)}
+  const cW=h.waveBg.displayWidth,cT=h.timeBg.displayWidth,cH=h.waveBg.displayHeight;
+  if(P){h.waveBg.setPosition(W-si.r-12-cW,si.t+12);h.timeBg.setPosition(W-si.r-12-cT,si.t+12+cH+6)}
   const pb=L.pause;h.pause.setPosition(W-si.r-pb.right-66,pb.bottom!=null?H-si.b-pb.bottom-66:si.t+pb.y);
-  if(!P){h.waveBg.setPosition(h.pause.x-8-64-8-124,si.t+12);h.wave.setPosition(h.waveBg.x+12,h.waveBg.y+8);h.timeBg.setPosition(h.pause.x-8-64,si.t+12);h.time.setPosition(h.timeBg.x+9,h.timeBg.y+8)}
+  if(!P){const cy=Math.round(h.pause.y+33-cH/2);h.timeBg.setPosition(h.pause.x-8-cT,cy);h.waveBg.setPosition(h.timeBg.x-8-cW,cy)}
+  this.centerChips();
   const S=L.slots,sz=S.size,sc=sz/72,n=4,tw=n*sz+(n-1)*S.gap,x0=S.cx!=null?Math.round(W*S.cx-tw/2):si.l+S.left,y0=H-si.b-S.bottom-sz-14;
-  h.slots.forEach((s,i)=>{const x=x0+i*(sz+S.gap);s.bg.setPosition(x,y0).setScale(sc);s.icon.setPosition(x+8*sc,y0+8*sc).setScale(sc);s.cd.setPosition(x,y0).setScale(sc)});
+  h.slots.forEach((s,i)=>{const x=x0+i*(sz+S.gap);s.bg.setPosition(x,y0).setScale(sc*uiS(s.bg));s.icon.setPosition(x+8*sc,y0+8*sc).setScale(sc*uiS(s.icon));s.cd.setPosition(x,y0).setScale(sc)});
   this.hudRect={slotsTop:y0};if(this.vig&&this.vig.scene){const vk=P&&this.textures.exists('fx_vignette_portrait')?'fx_vignette_portrait':MOOD.vignette.key;this.vig.setTexture(vk).setDisplaySize(W,H).setPosition(W/2,H/2)}}
- updateHUD(){const st=this.st,h=this.hud;h.hp.setCrop(0,0,Math.round(220*Math.max(0,st.hp)/RAGE.hp),20);h.hpTxt.setText(Math.ceil(Math.max(0,st.hp))+'/'+RAGE.hp);
-  h.xp.setCrop(0,0,Math.round(220*st.xp/st.need),8);h.lvl.setText(st.level);h.wave.setText('WAVE '+st.wave);h.time.setText(fmtT(st.elapsed));
+ centerChips(){const h=this.hud;for(const[bg,t]of[[h.waveBg,h.wave],[h.timeBg,h.time]])t.setPosition(Math.round(bg.x+(bg.displayWidth-(t.txt.length*9-1)*t.sc)/2),Math.round(bg.y+(bg.displayHeight-14)/2))}
+ updateHUD(){const st=this.st,h=this.hud;h.hp.setCrop(0,0,Math.round(h.hp.frame.width*Math.max(0,st.hp)/RAGE.hp),h.hp.frame.height);h.hpTxt.setText(Math.ceil(Math.max(0,st.hp))+'/'+RAGE.hp);
+  h.xp.setCrop(0,0,Math.round(h.xp.frame.width*Math.min(1,st.xp/st.need)),h.xp.frame.height);h.lvl.setText(st.level);h.wave.setText('WAVE '+st.wave);h.time.setText(fmtT(st.elapsed));this.centerChips();
   for(const s of h.slots){const A=ABILITIES[s.k];if(!A.cooldownMs){s.cd.setVisible(false);continue}const f=Math.max(0,this.abCd[s.k]||0)/A.cooldownMs,N=CD_SWEEP.frames,i=Math.min(N-1,Math.floor((1-f)*N));s.cd.setVisible(f>0).setFrame(i);s.sweepFrame=f>0?i:-1}}
  // ---------- touch joystick ----------
- buildJoystick(){const D=1e6+5;this.joy={base:this.add.image(0,0,'joy_base').setScrollFactor(0).setDepth(D).setVisible(false),knob:this.add.image(0,0,'joy_knob').setScrollFactor(0).setDepth(D+1).setVisible(false),v:new Phaser.Math.Vector2(),ptr:null};
-  this.input.on('pointerdown',(p,over)=>{if(over.length||this.joy.ptr)return;if(isPortrait(this)&&p.y<this.scale.height*TOUCH.portraitZoneFrom)return;
-   const j=this.joy;j.ptr=p;j.ox=p.x;j.oy=p.y;j.base.setPosition(p.x,p.y).setVisible(true);j.knob.setPosition(p.x,p.y).setVisible(true);j.v.set(0,0)});
-  this.input.on('pointermove',p=>{const j=this.joy;if(j.ptr!==p)return;let dx=p.x-j.ox,dy=p.y-j.oy;const d=Math.hypot(dx,dy),R=TOUCH.joyRadius;if(d>R){dx*=R/d;dy*=R/d}
+ buildJoystick(){const D=1e6+5;this.joy={base:uiFit(this.add.image(0,0,'joy_base')).setScrollFactor(0).setDepth(D).setVisible(false),knob:uiFit(this.add.image(0,0,'joy_knob')).setScrollFactor(0).setDepth(D+1).setVisible(false),v:new Phaser.Math.Vector2(),ptr:null};
+  this.input.on('pointerdown',(p,over)=>{if(over.length||this.joy.ptr)return;if(isPortrait(this)&&PY(p)<this.scale.gh*TOUCH.portraitZoneFrom)return;
+   const j=this.joy;j.ptr=p;j.ox=PX(p);j.oy=PY(p);j.base.setPosition(j.ox,j.oy).setVisible(true);j.knob.setPosition(j.ox,j.oy).setVisible(true);j.v.set(0,0)});
+  this.input.on('pointermove',p=>{const j=this.joy;if(j.ptr!==p)return;let dx=PX(p)-j.ox,dy=PY(p)-j.oy;const d=Math.hypot(dx,dy),R=TOUCH.joyRadius;if(d>R){dx*=R/d;dy*=R/d}
    j.knob.setPosition(j.ox+dx,j.oy+dy);const m=Math.min(1,d/R);j.v.set(m<TOUCH.deadzone?0:dx/R,m<TOUCH.deadzone?0:dy/R)});
   const end=p=>{if(this.joy.ptr===p)this.joyEnd()};this.input.on('pointerup',end);this.input.on('pointerupoutside',end)}
  joyEnd(){const j=this.joy;if(!j)return;j.ptr=null;j.v.set(0,0);j.base.setVisible(false);j.knob.setVisible(false)}
@@ -124,11 +126,11 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   this.embers=[];this.emberAcc=0;if(this.hud)this.layoutHUD()}
  updateEmbers(dt){const E=MOOD.embers;if(!E.enabled)return;const cam=this.cameras.main;this.emberAcc+=dt*E.perSec/1000;
   while(this.emberAcc>=1){this.emberAcc--;let e=this.embers.find(x=>!x.visible);if(!e){e=this.add.image(0,0,E.key).setDepth(9.4e5);this.embers.push(e)}e.setFrame(Math.floor(Math.random()*4)%(this.textures.get(E.key).frameTotal-1||1));
-   e.setPosition(cam.worldView.x+Math.random()*cam.width,cam.worldView.bottom).setVisible(true).setAlpha(E.alpha);e.life=Phaser.Math.Between(...E.lifeMs);e.t=0;e.vy=-Phaser.Math.Between(...E.rise);e.vx=Phaser.Math.Between(-12,12)}
+   e.setPosition(cam.worldView.x+Math.random()*(cam.width/cam.zoom),cam.worldView.bottom).setVisible(true).setAlpha(E.alpha);e.life=Phaser.Math.Between(...E.lifeMs);e.t=0;e.vy=-Phaser.Math.Between(...E.rise);e.vx=Phaser.Math.Between(-12,12)}
   for(const e of this.embers)if(e.visible){e.t+=dt;e.x+=e.vx*dt/1000;e.y+=e.vy*dt/1000;e.setAlpha(E.alpha*(1-e.t/e.life));if(e.t>=e.life)e.setVisible(false)}}
  // ---------- endless chunked ground ----------
  updateChunks(){const C=WORLD.chunk,cam=this.cameras.main,v=cam.worldView,pad=WORLD.chunkPad,
-   x0=Math.floor((this.rage.x-cam.width/2)/C)-pad,x1=Math.floor((this.rage.x+cam.width/2)/C)+pad,y0=Math.floor((this.rage.y-cam.height/2)/C)-pad,y1=Math.floor((this.rage.y+cam.height/2)/C)+pad,need=new Set();
+   x0=Math.floor((this.rage.x-(cam.width/cam.zoom)/2)/C)-pad,x1=Math.floor((this.rage.x+(cam.width/cam.zoom)/2)/C)+pad,y0=Math.floor((this.rage.y-(cam.height/cam.zoom)/2)/C)-pad,y1=Math.floor((this.rage.y+(cam.height/cam.zoom)/2)/C)+pad,need=new Set();
   for(let cx=x0;cx<=x1;cx++)for(let cy=y0;cy<=y1;cy++){const k=cx+','+cy;need.add(k);if(this.chunks.has(k))continue;
    const rnd=hash(cx,cy),ts=this.chunkPool.pop()||this.add.tileSprite(0,0,C,C,'ground').setOrigin(0).setDepth(-1e7);ts.setPosition(cx*C,cy*C).setVisible(true);
    const shade=0xd0+Math.floor(rnd()*0x30);ts.setTint(Phaser.Display.Color.GetColor(shade,shade,shade));const props=[];
@@ -138,12 +140,12 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   for(const[k,c]of this.chunks)if(!need.has(k)){c.ts.setVisible(false);this.chunkPool.push(c.ts);for(const p of c.props){p.setVisible(false);this.propPool.push(p)}this.chunks.delete(k)}
   this.st.chunks=this.chunks.size;this.st.chunkPool=this.chunkPool.length;
   // canopy wrap
-  const cw=cam.width,ch=cam.height;this.canopy.forEach((c,i)=>{const sx=cam.scrollX*1.25,sy=cam.scrollY*1.25,span=cw+400;let x=((i*397-sx)%span+span)%span-200,y=((i*233-sy)%(ch+300)+(ch+300))%(ch+300)-150;
+  const cw=(cam.width/cam.zoom),ch=(cam.height/cam.zoom);this.canopy.forEach((c,i)=>{const sx=cam.scrollX*1.25,sy=cam.scrollY*1.25,span=cw+400;let x=((i*397-sx)%span+span)%span-200,y=((i*233-sy)%(ch+300)+(ch+300))%(ch+300)-150;
    c.setPosition(Math.round(x+sx),Math.round(y+sy))})}
  // ---------- enemies ----------
  pickType(){const w=this.st.wave,list=Object.entries(ENEMIES).filter(([,e])=>w>=e.unlockWave),tot=list.reduce((a,[,e])=>a+e.weight,0);let r=Math.random()*tot;for(const[id,e]of list){r-=e.weight;if(r<=0)return id}return list[0][0]}
  spawn(){if(this.enemies.length>=WAVES.maxAlive)return false;const id=this.pickType(),E=ENEMIES[id],m=this.mul(this.st.wave),cam=this.cameras.main,
-   rad=Math.hypot(cam.width,cam.height)/2+WORLD.spawnMargin,a=Math.random()*Math.PI*2;
+   rad=Math.hypot((cam.width/cam.zoom),(cam.height/cam.zoom))/2+WORLD.spawnMargin,a=Math.random()*Math.PI*2;
   const e=(this.enemyPool.pop()||this.add.image(0,0,'en_'+id).setOrigin(.5,.9));e.setTexture('en_'+id).setVisible(true).setAlpha(1).setScale(1).setActive(true);
   e.setPosition(this.rage.x+Math.cos(a)*rad,this.rage.y+Math.sin(a)*rad);Object.assign(e,{type:id,hp:E.hp*m.hp,maxHp:E.hp*m.hp,spd:E.speed*m.sp,dmgv:E.dmg,xpv:E.xp,flash:0,dead:false,ccd:0,kx:0,ky:0,jit:(Math.random()-.5)*.6});
   this.enemies.push(e);this.st.spawned++;return true}
@@ -151,7 +153,7 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   const dx=e.x-this.rage.x,dy=e.y-this.rage.y,d=Math.hypot(dx,dy)||1;e.kx+=dx/d*ATTACK.knockback;e.ky+=dy/d*ATTACK.knockback;this.dmgNum(e.x,e.y-e.height,Math.round(dmg));
   if(e.hp<=0)this.kill(e)}
  kill(e){e.dead=true;this.st.kills++;this.dropGem(e.x,e.y,e.xpv);this.tweens.add({targets:e,alpha:0,scaleY:.2,duration:220,onComplete:()=>{e.setVisible(false).setActive(false);this.enemies.splice(this.enemies.indexOf(e),1);this.enemyPool.push(e)}})}
- dmgNum(x,y,n){let c=this.numPool.pop();if(!c)c=spriteText(this,0,0,'',DMG_NUM.scale,0xffe0a0);c.setText(String(n)).setPosition(Math.round(x-c.w/2),Math.round(y)).setVisible(true).setAlpha(1).setDepth(9e5);
+ dmgNum(x,y,n){let c=this.numPool.pop();if(!c)c=spriteText(this,0,0,'',DMG_NUM.scale,0xffe0a0);c.setText(String(n)).setPosition(Math.round(x-c.tw/2),Math.round(y)).setVisible(true).setAlpha(1).setDepth(9e5);
   this.tweens.add({targets:c,y:y-DMG_NUM.rise,alpha:0,duration:DMG_NUM.ms,onComplete:()=>{c.setVisible(false);this.numPool.push(c)}})}
  fx(key,x,y,rot,ms,scaleTo){const f=(this.fxPool.pop()||this.add.image(0,0,key)).setTexture(key).setPosition(x,y).setRotation(rot).setAlpha(1).setScale(1).setVisible(true).setDepth(y+1);
   this.tweens.add({targets:f,alpha:0,scale:scaleTo||1.2,duration:ms,onComplete:()=>{f.setVisible(false);this.fxPool.push(f)}})}
@@ -162,7 +164,7 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
    if(!manual&&!n)return false;this.fx('ring',this.rage.x,this.rage.y-20,0,300,A.radius/60);this.st.abilityUses=(this.st.abilityUses||0)+1}
   this.abCd[k]=A.cooldownMs;return true}
  gainXp(v){const st=this.st;st.xp+=v;while(st.xp>=st.need){st.xp-=st.need;st.level++;st.need=Math.round(XP.base*Math.pow(XP.growth,st.level-1));this.cameras.main.flash(120,255,200,80)}}
- gameOver(){this.over=true;this.rage.setVelocity(0,0).setAlpha(.4);const W=this.scale.width,H=this.scale.height,t=spriteText(this,0,0,'RAGE HAS FALLEN',3,0xd83a2a).setScrollFactor(0).setDepth(2e6);t.setPosition(Math.round(W/2-t.w/2),Math.round(H/2-20));
+ gameOver(){this.over=true;this.rage.setVelocity(0,0).setAlpha(.4);const W=this.scale.gw,H=this.scale.gh,t=spriteText(this,0,0,'RAGE HAS FALLEN',3,0xd83a2a).setScrollFactor(0).setDepth(2e6);t.setPosition(Math.round(W/2-t.tw/2),Math.round(H/2-20));
   this.time.delayedCall(2200,()=>this.scene.start('Menu'))}
  update(t,dtRaw){if(this.over)return;const dt=Math.min(50,dtRaw)*DEBUG.timeScale,st=this.st,k=this.keys,r=this.rage;st.elapsed+=dt;
   this.fpsS.push(this.game.loop.actualFps);if(this.fpsS.length>600)this.fpsS.shift();st.fps=Math.round(this.game.loop.actualFps);
@@ -179,7 +181,7 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   // enemies
   const s=dt/1000,cam=this.cameras.main;this.invuln-=dt;
   for(const e of this.enemies){if(e.dead)continue;if(e.flash>0){e.flash-=dt;if(e.flash<=0)e.setTexture('en_'+e.type)}
-   let dx=r.x-e.x,dy=r.y-e.y;const dd=Math.hypot(dx,dy)||1;if(dd>WORLD.despawnDist){const a=Math.random()*Math.PI*2,rad=Math.hypot(cam.width,cam.height)/2+WORLD.spawnMargin;e.setPosition(r.x+Math.cos(a)*rad,r.y+Math.sin(a)*rad);continue}
+   let dx=r.x-e.x,dy=r.y-e.y;const dd=Math.hypot(dx,dy)||1;if(dd>WORLD.despawnDist){const a=Math.random()*Math.PI*2,rad=Math.hypot((cam.width/cam.zoom),(cam.height/cam.zoom))/2+WORLD.spawnMargin;e.setPosition(r.x+Math.cos(a)*rad,r.y+Math.sin(a)*rad);continue}
    const c=Math.cos(e.jit),sn=Math.sin(e.jit),ux=(dx*c-dy*sn)/dd,uy=(dx*sn+dy*c)/dd;e.x+=(ux*e.spd+e.kx)*s;e.y+=(uy*e.spd+e.ky)*s;e.kx*=.85;e.ky*=.85;e.setDepth(e.y);if(ux)e.setFlipX(ux<0);
    e.ccd-=dt;if(dd<26&&e.ccd<=0&&this.invuln<=0){e.ccd=WAVES.contactCdMs;this.invuln=RAGE.invulnMs;if(!DEBUG.god)st.hp-=e.dmgv;st.hurt=(st.hurt||0)+1;r.setTint(0xff6060);this.time.delayedCall(90,()=>r.clearTint())}}
   st.alive=this.enemies.filter(e=>!e.dead).length;st.maxAlive=Math.max(st.maxAlive||0,st.alive);
@@ -194,14 +196,14 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   st.gemsOnGround=this.gems.length;this.updateHUD();if(st.hp<=0)this.gameOver()}}
 
 class Pause extends Phaser.Scene{constructor(){super('Pause')}
- create(){const W=this.scale.width,H=this.scale.height;window.SLIDERS={};
+ create(){const W=this.scale.gw,H=this.scale.gh;window.SLIDERS={};
   this.add.image(W/2,H/2,'px').setDisplaySize(W,H).setTint(0).setAlpha(.6).setInteractive();
   const pw=416,ph=315,px=Math.round((W-pw)/2),py=Math.round((H-ph)/2);this.panel={x:px,y:py};
-  if(window.PIECES){this.add.image(px,py,this.textures.exists('ui_panel_pause')?'ui_panel_pause':'menu_panel_options').setOrigin(0);
+  if(window.PIECES){uiFit(this.add.image(px,py,this.textures.exists('ui_panel_pause')?'ui_panel_pause':'menu_panel_options')).setOrigin(0);
    skullSlider(this,'music',px+140,py+99,py+98);skullSlider(this,'sfx',px+140,py+158,py+156);
    const cur=this.add.image(px+48,py+216,'menu_cursor_options').setOrigin(0);cur.off=-6;
    this.back=pieceButton(this,'back',cur,()=>this.resume(),false,{x:px+96,y:py+222});this.back.on('pointerover',()=>cur.setX(px+48));
-   const HK=this.textures.exists('ui_button_home')?{n:'ui_button_home',h:'ui_button_home_hover'}:{n:'ph_home_normal',h:'ph_home_hover'};const hm=this.home=this.add.image(px+262,py+222,HK.n).setOrigin(0).setInteractive({useHandCursor:true,hitArea:padHit(84,32),hitAreaCallback:Phaser.Geom.Rectangle.Contains});
+   const HK=this.textures.exists('ui_button_home')?{n:'ui_button_home',h:'ui_button_home_hover'}:{n:'ph_home_normal',h:'ph_home_hover'};const hm=this.home=uiFit(this.add.image(px+262,py+222,HK.n)).setOrigin(0);hm.setInteractive({useHandCursor:true,hitArea:padHitS(hm,84,32),hitAreaCallback:Phaser.Geom.Rectangle.Contains});
    hm.on('pointerover',()=>{hm.setTexture(HK.h);cur.setPosition(hm.x-46,hm.y-6)}).on('pointerout',()=>hm.setTexture(HK.n)).on('pointerdown',()=>this.goHome())}
   this.input.keyboard.on('keydown-ESC',()=>this.resume());this.input.keyboard.on('keydown-P',()=>this.resume());
   this.scale.on('resize',this.relayout,this);this.events.once('shutdown',()=>this.scale.off('resize',this.relayout,this))}
@@ -211,7 +213,7 @@ class Pause extends Phaser.Scene{constructor(){super('Pause')}
 
 // live orientation switching
 function initOrientation(game){let last=null;const apply=()=>{const p=wantPortrait(),S=game.scale;
-  if(p!==(S.scaleMode===Phaser.Scale.EXPAND)){last=p;S.scaleMode=p?Phaser.Scale.EXPAND:Phaser.Scale.FIT;S.setGameSize(p?PORTRAIT.base.w:BASE.w,p?PORTRAIT.base.h:BASE.h);}
+  if(p!==(S.scaleMode===Phaser.Scale.EXPAND)){last=p;S.scaleMode=p?Phaser.Scale.EXPAND:Phaser.Scale.FIT;S.setGameSize((p?PORTRAIT.base.w:BASE.w)*RS,(p?PORTRAIT.base.h:BASE.h)*RS);}
   S.refresh();for(const s of game.scene.getScenes(true))if(['Menu','Options','Quit'].includes(s.scene.key))s.scene.restart()};
  let tm;const on=()=>{clearTimeout(tm);tm=setTimeout(apply,120)};addEventListener('resize',on);addEventListener('orientationchange',on);
- last=game.scale.height>game.scale.width}
+ last=game.scale.gh>game.scale.gw}
