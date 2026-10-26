@@ -73,6 +73,7 @@ class Quit extends Phaser.Scene{constructor(){super('Quit')}
  create(){this.cameras.main.setBackgroundColor('#000');txt(this,this.scale.gw/2,240,'LAST ORC',56,'#c0392b');
   txt(this,this.scale.gw/2,320,'Thanks for playing. Rage rests... for now.');txt(this,this.scale.gw/2,390,'click to return',20,'#888');
   this.input.once('pointerdown',()=>this.scene.start('Menu'))}}
-const P0=wantPortrait();window.GAME=new Phaser.Game({type:Phaser.AUTO,width:(P0?PORTRAIT.base.w:W)*RS,height:(P0?PORTRAIT.base.h:H)*RS,pixelArt:true,roundPixels:true,backgroundColor:'#000',
+window.FONT_READY.then(()=>{const P0=wantPortrait();window.GAME=new Phaser.Game({type:Phaser.AUTO,width:(P0?PORTRAIT.base.w:W)*RS,height:(P0?PORTRAIT.base.h:H)*RS,pixelArt:true,roundPixels:true,backgroundColor:'#000',
  scale:{mode:P0?Phaser.Scale.EXPAND:Phaser.Scale.FIT,autoCenter:Phaser.Scale.CENTER_BOTH},physics:{default:'arcade'},input:{activePointers:3},scene:[Boot,Menu,Options,Quit,Game,Pause]});
 initOrientation(GAME);
+});

@@ -63,3 +63,6 @@ window.DEBUG = { god:false, timeScale:1 };
 window.ASSETS = { ground:{ file:null, tile:64 } };
 // HD UI set (assets/ui/ui_hd.json + hud_portrait_rage): display size in layout px. Files: <name>_hd.png (4x) / <name>_hd2.png (2x pre-shrunk).
 window.UI_HD={"hud_frame":[83,71],"hp_bar_frame":[220,20],"hp_fill":[220,20],"xp_bar_frame":[220,8],"xp_fill":[220,8],"ability_slot":[72,72],"pause_button":[66,66],"panel_pause":[416,315],"button_home":[84,32],"button_home_hover":[84,32],"joy_base":[128,128],"joy_knob":[60,60],"icon_axe_cleave":[56,56],"icon_whirlwind":[56,56],"icon_war_stomp":[56,56],"icon_rage_roar":[56,56],"chip_wave":[120,28],"chip_timer":[62,28],"hud_portrait_rage":[50,52]};
+
+// bump when art in ../assets/ui changes so browsers/CDNs refetch (appended as ?v=)
+window.ASSET_V='20261026-paint1';

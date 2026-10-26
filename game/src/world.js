@@ -3,7 +3,7 @@
 const ORIENT_FORCE=new URLSearchParams(location.search).get('orient');
 const wantPortrait=()=>ORIENT_FORCE?ORIENT_FORCE==='portrait':innerHeight>innerWidth;
 const isPortrait=s=>s.scale.gh>s.scale.gw;
-const FONT_CHARS=' 0123456789:/-+.!ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const FONT_X=4;const FONT_CHARS=' 0123456789:/-+.!ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 function applyLayout(s){if(!isPortrait(s)||!window.LJ_P){window.LJ=LJ_L;return}
  const ox=Math.round((s.scale.gw-PORTRAIT.base.w)/2),oy=Math.round((s.scale.gh-PORTRAIT.base.h)/2),m=Object.assign({},LJ_L);
  for(const[k,v]of Object.entries(LJ_P)){if(k[0]==='_')continue;if(typeof v!=='object'){m[k]=v+ox;continue}m[k]=Object.assign({},v);if('x'in v)m[k].x=v.x+ox;if('y'in v)m[k].y=v.y+oy}
@@ -16,7 +16,7 @@ function safeInsets(s){let d=document.getElementById('safeprobe');if(!d){d=docum
 const UI_MAP={ability_slot:'slot',pause_button:'pause_btn',joy_base:'joy_base',joy_knob:'joy_knob',hud_frame:'hud_frame',hud_portrait_rage:'hud_portrait_rage',hp_bar_frame:'hp_bar_frame',hp_fill:'bar_hp',xp_bar_frame:'xp_bar_frame',xp_fill:'bar_xp',
  icon_axe_cleave:'icon_axe_cleave',icon_whirlwind:'icon_whirlwind',icon_war_stomp:'icon_war_stomp',icon_rage_roar:'icon_rage_roar',panel_pause:'ui_panel_pause',button_home:'ui_button_home',button_home_hover:'ui_button_home_hover',
  menu_bg_portrait:'ui_menu_bg_portrait',orc_on_rock_portrait:'ui_orc_on_rock_portrait',fx_vignette_portrait:'fx_vignette_portrait',fx_ember:'fx_ember_single',chip_wave:'chip_wave',chip_timer:'chip_timer'};
-function loadWorldAssets(s){const U='../assets/ui/';for(const[f,k]of Object.entries(UI_MAP)){if(UI_HD[f]){s.load.image(k,U+f+HD_TIER+'.png');UI_DISP[k]=UI_HD[f]}else s.load.image(k,U+f+'.png')}
+function loadWorldAssets(s){const U='../assets/ui/';for(const[f,k]of Object.entries(UI_MAP)){if(UI_HD[f]){s.load.image(k,U+f+HD_TIER+'.png?v='+ASSET_V);UI_DISP[k]=UI_HD[f]}else s.load.image(k,U+f+'.png?v='+ASSET_V)}
 for(const[k,f]of Object.entries(RAGE.files))if(f)s.load.spritesheet(RAGE.keys[k],f,{frameWidth:RAGE.frameW,frameHeight:RAGE.frameH});
  for(const m of Object.values(MOOD))if(m.file){if(m.frame)s.load.spritesheet(m.key,m.file,{frameWidth:m.frame,frameHeight:m.frame});else s.load.image(m.key,m.file)}}
 function genWorldTextures(s){const T=s.textures,g=s.make.graphics({},false),mk=(k,w,h,fn)=>{if(T.exists(k))return;g.clear();fn(g);g.generateTexture(k,w,h)};
@@ -55,14 +55,15 @@ function genWorldTextures(s){const T=s.textures,g=s.make.graphics({},false),mk=(
  cv(MOOD.vignette.key,256,144,c=>{const r=c.createRadialGradient(128,72,40,128,72,150);r.addColorStop(0,'rgba(0,0,0,0)');r.addColorStop(1,'rgba(0,0,0,1)');c.fillStyle=r;c.fillRect(0,0,256,144)});
  // placeholder pause-panel HOME button (menu-ish serif lettering) normal/hover
  for(const[k,col]of[['ph_home_normal','#cdbb98'],['ph_home_hover','#fff2cc']])cv(k,84,32,c=>{c.font='bold 22px Georgia,serif';c.textBaseline='middle';c.lineWidth=4;c.strokeStyle='#1a1210';c.strokeText('HOME',4,17);c.fillStyle=col;c.fillText('HOME',4,17)});
- // sprite font sheet
- const fw=10,fh=14,ft=cv('font',fw*FONT_CHARS.length,fh,c=>{c.font='bold 13px monospace';c.textBaseline='top';c.lineWidth=3;c.strokeStyle='#000';c.fillStyle='#fff';
-  [...FONT_CHARS].forEach((ch,i)=>{c.strokeText(ch,i*fw+1,1);c.fillText(ch,i*fw+1,1)})});
- [...FONT_CHARS].forEach((ch,i)=>{if(!ft.has('c'+i))ft.add('c'+i,0,i*fw,0,fw,fh)});g.destroy()}
+ // sprite font sheet: baked at 4x (FONT_X) with an outline, drawn at 1/FONT_X with LINEAR so it stays crisp at device DPR
+ const X=FONT_X,fw=12*X,fh=16*X,ff=window.HUD_FONT?`700 ${13*X}px ${HUD_FONT}`:`bold ${13*X}px monospace`;window.FONT_ADV={};
+ const ft=cv('font',fw*FONT_CHARS.length,fh,c=>{c.font=ff;c.textBaseline='middle';c.textAlign='center';c.lineJoin='round';c.lineWidth=3*X;c.strokeStyle='#000';c.fillStyle='#fff';
+  [...FONT_CHARS].forEach((ch,i)=>{const cx=i*fw+fw/2,cy=fh/2+X*0.5;c.strokeText(ch,cx,cy);c.fillText(ch,cx,cy);FONT_ADV[ch]=Math.ceil(c.measureText(ch).width/X)+1})});
+ FONT_ADV[' ']=5;{const m=Math.max(...[...'0123456789'].map(d=>FONT_ADV[d]));for(const d of '0123456789')FONT_ADV[d]=m}[...FONT_CHARS].forEach((ch,i)=>{if(!ft.has('c'+i))ft.add('c'+i,0,i*fw,0,fw,fh)});ft.setFilter(Phaser.Textures.FilterMode.LINEAR);g.destroy()}
 // sprite text: container of glyph images
 function spriteText(s,x,y,str,scale=1,tint=0xffffff){const c=s.add.container(x,y);c.sc=scale;c.tint=tint;c.setText=t=>{t=String(t).toUpperCase();if(t===c.txt)return c;c.txt=t;
   while(c.list.length<t.length)c.add(s.add.image(0,0,'font','c0').setOrigin(0));
-  c.list.forEach((im,i)=>{if(i<t.length){const j=Math.max(0,FONT_CHARS.indexOf(t[i]));im.setFrame('c'+j).setVisible(true).setPosition(i*9*c.sc,0).setScale(c.sc).setTint(c.tint)}else im.setVisible(false)});c.tw=t.length*9*c.sc;return c};return c.setText(str)}
+  let ax=0;c.list.forEach((im,i)=>{if(i<t.length){const j=Math.max(0,FONT_CHARS.indexOf(t[i])),adv=FONT_ADV[t[i]]||9;im.setFrame('c'+j).setVisible(true).setPosition((ax+adv/2-6)*c.sc,0).setScale(c.sc/FONT_X).setTint(c.tint);ax+=adv}else im.setVisible(false)});c.tw=ax*c.sc;c.th=14*c.sc;return c};return c.setText(str)}
 const fmtT=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function hash(a,b){let h=(a*374761393+b*668265263)|0;h=(h^(h>>>13))*1274126177|0;return()=>{h=(h+0x6D2B79F5)|0;let t=Math.imul(h^(h>>>15),1|h);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296}}
 
@@ -98,7 +99,7 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   this.layoutHUD()}
  layoutHUD(){const W=this.scale.gw,H=this.scale.gh,P=isPortrait(this),L=HUD[P?'portrait':'landscape'],si=P?safeInsets(this):{t:0,r:0,b:0,l:0},h=this.hud;
   const X=o=>o.right!=null?W-si.r-o.right:si.l+o.x,Y=(o,hh)=>o.bottom!=null?H-si.b-o.bottom-hh:si.t+o.y;
-  const px=si.l+L.portrait.x,py=si.t+L.portrait.y;h.frame.setPosition(px,py);h.face.setPosition(px+11,py+7).setDisplaySize(50,52);h.badge.setPosition(px-6,py+46).setVisible(!this.textures.exists('hud_portrait_rage'));h.lvl.setPosition(px+65-(String(this.st?this.st.level:1).length-1)*4,py+55);
+  const px=si.l+L.portrait.x,py=si.t+L.portrait.y;h.frame.setPosition(px,py);h.face.setPosition(px+11,py+7).setDisplaySize(50,52);h.badge.setPosition(px-6,py+46).setVisible(!this.textures.exists('hud_portrait_rage'));h.lvlC=[px+72.5,py+60];h.lvl.setPosition(Math.round(px+72.5-h.lvl.tw/2),Math.round(py+60-8));
   h.hpBg.setPosition(si.l+L.hp.x,si.t+L.hp.y);h.hp.setPosition(si.l+L.hp.x,si.t+L.hp.y);h.hpTxt.setPosition(si.l+L.hp.x+70,si.t+L.hp.y+3);
   h.xpBg.setPosition(si.l+L.xp.x,si.t+L.xp.y);h.xp.setPosition(si.l+L.xp.x,si.t+L.xp.y);
   const cW=h.waveBg.displayWidth,cT=h.timeBg.displayWidth,cH=h.waveBg.displayHeight;
@@ -109,9 +110,9 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   const S=L.slots,sz=S.size,sc=sz/72,n=4,tw=n*sz+(n-1)*S.gap,x0=S.cx!=null?Math.round(W*S.cx-tw/2):si.l+S.left,y0=H-si.b-S.bottom-sz-14;
   h.slots.forEach((s,i)=>{const x=x0+i*(sz+S.gap);s.bg.setPosition(x,y0).setScale(sc*uiS(s.bg));s.icon.setPosition(x+8*sc,y0+8*sc).setScale(sc*uiS(s.icon));s.cd.setPosition(x,y0).setScale(sc)});
   this.hudRect={slotsTop:y0};if(this.vig&&this.vig.scene){const vk=P&&this.textures.exists('fx_vignette_portrait')?'fx_vignette_portrait':MOOD.vignette.key;this.vig.setTexture(vk).setDisplaySize(W,H).setPosition(W/2,H/2)}}
- centerChips(){const h=this.hud;for(const[bg,t]of[[h.waveBg,h.wave],[h.timeBg,h.time]])t.setPosition(Math.round(bg.x+(bg.displayWidth-(t.txt.length*9-1)*t.sc)/2),Math.round(bg.y+(bg.displayHeight-14)/2))}
- updateHUD(){const st=this.st,h=this.hud;h.hp.setCrop(0,0,Math.round(h.hp.frame.width*Math.max(0,st.hp)/RAGE.hp),h.hp.frame.height);h.hpTxt.setText(Math.ceil(Math.max(0,st.hp))+'/'+RAGE.hp);
-  h.xp.setCrop(0,0,Math.round(h.xp.frame.width*Math.min(1,st.xp/st.need)),h.xp.frame.height);h.lvl.setText(st.level);h.wave.setText('WAVE '+st.wave);h.time.setText(fmtT(st.elapsed));this.centerChips();
+ centerChips(){const h=this.hud;for(const[bg,t]of[[h.waveBg,h.wave],[h.timeBg,h.time]])t.setPosition(Math.round(bg.x+(bg.displayWidth-t.tw)/2),Math.round(bg.y+(bg.displayHeight-16)/2))}
+ updateHUD(){const st=this.st,h=this.hud;h.hp.setCrop(0,0,Math.round(h.hp.frame.width*Math.max(0,st.hp)/RAGE.hp),h.hp.frame.height);h.hpTxt.setText(Math.ceil(Math.max(0,st.hp))+'/'+RAGE.hp);h.hpTxt.setPosition(Math.round(h.hpBg.x+(h.hpBg.displayWidth-h.hpTxt.tw)/2),Math.round(h.hpBg.y+(h.hpBg.displayHeight-16)/2));
+  h.xp.setCrop(0,0,Math.round(h.xp.frame.width*Math.min(1,st.xp/st.need)),h.xp.frame.height);h.lvl.setText(st.level);if(h.lvlC)h.lvl.setPosition(Math.round(h.lvlC[0]-h.lvl.tw/2),Math.round(h.lvlC[1]-8));h.wave.setText('WAVE '+st.wave);h.time.setText(fmtT(st.elapsed));this.centerChips();
   for(const s of h.slots){const A=ABILITIES[s.k];if(!A.cooldownMs){s.cd.setVisible(false);continue}const f=Math.max(0,this.abCd[s.k]||0)/A.cooldownMs,N=CD_SWEEP.frames,i=Math.min(N-1,Math.floor((1-f)*N));s.cd.setVisible(f>0).setFrame(i);s.sweepFrame=f>0?i:-1}}
  // ---------- touch joystick ----------
  buildJoystick(){const D=1e6+5;this.joy={base:uiFit(this.add.image(0,0,'joy_base')).setScrollFactor(0).setDepth(D).setVisible(false),knob:uiFit(this.add.image(0,0,'joy_knob')).setScrollFactor(0).setDepth(D+1).setVisible(false),v:new Phaser.Math.Vector2(),ptr:null};

@@ -22,3 +22,8 @@ window.UI_DISP={};
 (function(){const C=Phaser.Cameras.Scene2D.Camera.prototype,pr=C.preRender;
  C.preRender=function(){pr.apply(this,arguments);if(this.originX===0&&this.originY===0&&this.zoomX!==1){const w=this.width/this.zoomX,h=this.height/this.zoomY;
   this.worldView.setTo(this.scrollX,this.scrollY,w,h);this.midPoint.set(this.scrollX+w/2,this.scrollY+h/2)}}})();
+
+// bundled HUD font (Pixelify Sans, SIL OFL 1.1) - loaded before the game boots; falls back to monospace on failure
+window.HUD_FONT='LOHud';window.FONT_READY=(window.FontFace?new FontFace('LOHud','url(assets/fonts/PixelifySans.ttf?v='+window.ASSET_V+')',{weight:'400 700'}).load().then(f=>{document.fonts.add(f);return document.fonts.load('700 52px LOHud')}):Promise.resolve()).catch(e=>{console.warn('hud font failed',e);window.HUD_FONT=null});
+// cache-busting: append ?v=ASSET_V to every loader URL that has none (menu art, json, audio, atlases)
+(()=>{const P=Phaser.Loader.LoaderPlugin.prototype,o=P.addFile;P.addFile=function(f){for(const x of Array.isArray(f)?f:[f])if(x&&typeof x.url==='string'&&!x.url.startsWith('data:')&&!x.url.startsWith('blob:')&&!x.url.includes('?'))x.url+='?v='+window.ASSET_V;return o.call(this,f)}})();
