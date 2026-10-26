@@ -1,0 +1,130 @@
+{
+ "_note": "Portrait 576x1024 base: logo (cropped above debris) top, orc_on_rock_portrait middle with its 60px fade over the horizon/lava band, wood panel lower third over the fade.",
+ "_base": {
+  "w": 576,
+  "h": 1024
+ },
+ "background": {
+  "cover": true
+ },
+ "background_options": {
+  "cover": true
+ },
+ "orc_on_rock": {
+  "x": 45,
+  "y": 357,
+  "s": 0.9,
+  "tex": "ui_orc_on_rock_portrait"
+ },
+ "orc_options": {
+  "x": 45,
+  "y": 357,
+  "s": 0.9,
+  "tex": "ui_orc_on_rock_portrait"
+ },
+ "logo": {
+  "x": 18,
+  "y": 120,
+  "s": 0.8,
+  "tex": "menu_logo_portrait"
+ },
+ "logo_options": {
+  "x": 18,
+  "y": 120,
+  "s": 0.8,
+  "tex": "menu_logo_portrait"
+ },
+ "panel": {
+  "x": 147,
+  "y": 690
+ },
+ "button_new_game": {
+  "w": 132,
+  "h": 32,
+  "x": 227,
+  "y": 795
+ },
+ "button_continue": {
+  "w": 132,
+  "h": 32,
+  "x": 227,
+  "y": 841
+ },
+ "button_options": {
+  "w": 116,
+  "h": 32,
+  "x": 227,
+  "y": 887
+ },
+ "button_quit": {
+  "w": 60,
+  "h": 32,
+  "x": 227,
+  "y": 933
+ },
+ "cursor_skull": {
+  "w": 42,
+  "h": 44,
+  "x": 183,
+  "y": 788
+ },
+ "menu_cursor_x": 181,
+ "panel_options": {
+  "x": 80,
+  "y": 700
+ },
+ "button_back": {
+  "w": 74,
+  "h": 32,
+  "x": 176,
+  "y": 922
+ },
+ "slider_track": {
+  "w": 240,
+  "h": 39,
+  "x": 220,
+  "y": 799
+ },
+ "slider_fill": {
+  "w": 240,
+  "h": 39,
+  "x": 220,
+  "y": 799
+ },
+ "slider_handle": {
+  "w": 39,
+  "h": 41,
+  "x": 352,
+  "y": 798
+ },
+ "slider_track_sfx": {
+  "w": 240,
+  "h": 39,
+  "x": 220,
+  "y": 858
+ },
+ "slider_handle_sfx": {
+  "w": 39,
+  "h": 41,
+  "x": 326,
+  "y": 856
+ },
+ "label_music": {
+  "w": 71,
+  "h": 21,
+  "x": 131,
+  "y": 805
+ },
+ "label_sfx": {
+  "w": 44,
+  "h": 20,
+  "x": 132,
+  "y": 864
+ },
+ "cursor_skull_options": {
+  "w": 37,
+  "h": 41,
+  "x": 128,
+  "y": 916
+ }
+}
