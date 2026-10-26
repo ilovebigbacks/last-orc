@@ -9,8 +9,11 @@ window.MENU_PIECES = { background:'background.png', logo:'logo.png', orc_rock:'o
 window.FRAME = { normal:'_normal', hover:'_hover' };
 window.LAYOUT_KEYS = { background:'background', logo:'logo', orc_rock:'orc_on_rock', panel:'panel', panel_options:'panel_options', background_options:'background_options', logo_options:'logo_options', orc_options:'orc_options', cursor:'cursor_skull', cursor_options:'cursor_skull_options',
   button:id=>'button_'+id, track:{music:'slider_track',sfx:'slider_track_sfx'}, handle:{music:'slider_handle',sfx:'slider_handle_sfx'}, fillInner:'slider_fill_inner' };
-window.SLIDER = { trackW:240, fillH:39, handleW:39, frameL:21, frameR:21, endRamp:0.05 };
-// fill crop 0..trackW (0 => none, 1 => full); handle left edge moves within inner frame [frameL, trackW-frameR-handleW] (relative to track x)
+window.SLIDER = { trackW:240, fillH:39, handleW:39, handleMin:13, handleMax:188, redEnd:31 };
+// All relative to the track's x. slider_fill.png red runs cols 21..218 (frame is opaque, no transparent pad).
+// Handle left edge moves handleMin..handleMax. Skull body is opaque at handle cols 8..31 on the bar rows,
+// so fill crop = handle.x - track.x + redEnd: red ends under the skull's right body edge (col 30), full (219) at 100.
+// At value 0 the fill is hidden (any red there would sit under the skull anyway).
 window.MENU_CURSOR_X = 60;  // main-menu skull x override (Options BACK skull stays at layout.json x)  // innerX/innerW overridden by layout.json slider_fill_inner if present
 window.ORC_BOB_OPTIONS = 0;  // bob px on Options
 window.ORC_BOB = { px:0, ms:1400 };  // idle bob for orc_on_rock (set px:0 to disable)
