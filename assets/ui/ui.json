@@ -1,0 +1,187 @@
+{
+ "ability_slot": {
+  "file": "assets/ui/ability_slot.png",
+  "w": 72,
+  "h": 72,
+  "file2x": "assets/ui/@2x/ability_slot.png",
+  "w2x": 144,
+  "h2x": 144
+ },
+ "button_home": {
+  "file": "assets/ui/button_home.png",
+  "w": 84,
+  "h": 32,
+  "file2x": "assets/ui/@2x/button_home.png",
+  "w2x": 168,
+  "h2x": 64
+ },
+ "button_home_hover": {
+  "file": "assets/ui/button_home_hover.png",
+  "w": 84,
+  "h": 32,
+  "file2x": "assets/ui/@2x/button_home_hover.png",
+  "w2x": 168,
+  "h2x": 64
+ },
+ "fx_ember": {
+  "file": "assets/ui/fx_ember.png",
+  "w": 8,
+  "h": 8,
+  "file2x": "assets/ui/@2x/fx_ember.png",
+  "w2x": 16,
+  "h2x": 16
+ },
+ "fx_ember_strip": {
+  "file": "assets/ui/fx_ember_strip.png",
+  "w": 32,
+  "h": 8,
+  "file2x": "assets/ui/@2x/fx_ember_strip.png",
+  "w2x": 64,
+  "h2x": 16,
+  "frames": {
+   "count": 4,
+   "frameWidth": 8,
+   "frameHeight": 8
+  }
+ },
+ "fx_vignette": {
+  "file": "assets/ui/fx_vignette.png",
+  "w": 1024,
+  "h": 576,
+  "file2x": "assets/ui/@2x/fx_vignette.png",
+  "w2x": 2048,
+  "h2x": 1152
+ },
+ "fx_vignette_portrait": {
+  "file": "assets/ui/fx_vignette_portrait.png",
+  "w": 576,
+  "h": 1248,
+  "file2x": "assets/ui/@2x/fx_vignette_portrait.png",
+  "w2x": 1152,
+  "h2x": 2496
+ },
+ "hp_bar_frame": {
+  "file": "assets/ui/hp_bar_frame.png",
+  "w": 220,
+  "h": 20,
+  "file2x": "assets/ui/@2x/hp_bar_frame.png",
+  "w2x": 440,
+  "h2x": 40
+ },
+ "hp_fill": {
+  "file": "assets/ui/hp_fill.png",
+  "w": 220,
+  "h": 20,
+  "file2x": "assets/ui/@2x/hp_fill.png",
+  "w2x": 440,
+  "h2x": 40,
+  "note": "same canvas as hp_bar_frame; setCrop(0,0,w*hp,h)"
+ },
+ "hud_frame": {
+  "file": "assets/ui/hud_frame.png",
+  "w": 83,
+  "h": 71,
+  "file2x": "assets/ui/@2x/hud_frame.png",
+  "w2x": 166,
+  "h2x": 142
+ },
+ "hud_portrait_rage": {
+  "file": "assets/ui/hud_portrait_rage.png",
+  "w": 83,
+  "h": 71,
+  "file2x": "assets/ui/@2x/hud_portrait_rage.png",
+  "w2x": 166,
+  "h2x": 142,
+  "note": "draw BEHIND hud_frame at the same x,y; window is ellipse (11,7)-(60,58)"
+ },
+ "icon_axe_cleave": {
+  "file": "assets/ui/icon_axe_cleave.png",
+  "w": 56,
+  "h": 56,
+  "file2x": "assets/ui/@2x/icon_axe_cleave.png",
+  "w2x": 112,
+  "h2x": 112
+ },
+ "icon_rage_roar": {
+  "file": "assets/ui/icon_rage_roar.png",
+  "w": 56,
+  "h": 56,
+  "file2x": "assets/ui/@2x/icon_rage_roar.png",
+  "w2x": 112,
+  "h2x": 112
+ },
+ "icon_war_stomp": {
+  "file": "assets/ui/icon_war_stomp.png",
+  "w": 56,
+  "h": 56,
+  "file2x": "assets/ui/@2x/icon_war_stomp.png",
+  "w2x": 112,
+  "h2x": 112
+ },
+ "icon_whirlwind": {
+  "file": "assets/ui/icon_whirlwind.png",
+  "w": 56,
+  "h": 56,
+  "file2x": "assets/ui/@2x/icon_whirlwind.png",
+  "w2x": 112,
+  "h2x": 112
+ },
+ "joy_base": {
+  "file": "assets/ui/joy_base.png",
+  "w": 128,
+  "h": 128,
+  "file2x": "assets/ui/@2x/joy_base.png",
+  "w2x": 256,
+  "h2x": 256
+ },
+ "joy_knob": {
+  "file": "assets/ui/joy_knob.png",
+  "w": 60,
+  "h": 60,
+  "file2x": "assets/ui/@2x/joy_knob.png",
+  "w2x": 120,
+  "h2x": 120
+ },
+ "menu_bg_portrait": {
+  "file": "assets/ui/menu_bg_portrait.png",
+  "w": 576,
+  "h": 1248,
+  "file2x": "assets/ui/@2x/menu_bg_portrait.png",
+  "w2x": 1152,
+  "h2x": 2496
+ },
+ "panel_pause": {
+  "file": "assets/ui/panel_pause.png",
+  "w": 416,
+  "h": 315,
+  "file2x": "assets/ui/@2x/panel_pause.png",
+  "w2x": 832,
+  "h2x": 630,
+  "note": "clean wood; place slider_track/fill/handle at the Options layout positions (panel-local track x140,y99 and x140,y158)"
+ },
+ "pause_button": {
+  "file": "assets/ui/pause_button.png",
+  "w": 66,
+  "h": 66,
+  "file2x": "assets/ui/@2x/pause_button.png",
+  "w2x": 132,
+  "h2x": 132
+ },
+ "xp_bar_frame": {
+  "file": "assets/ui/xp_bar_frame.png",
+  "w": 220,
+  "h": 8,
+  "file2x": "assets/ui/@2x/xp_bar_frame.png",
+  "w2x": 440,
+  "h2x": 16
+ },
+ "xp_fill": {
+  "file": "assets/ui/xp_fill.png",
+  "w": 220,
+  "h": 8,
+  "file2x": "assets/ui/@2x/xp_fill.png",
+  "w2x": 440,
+  "h2x": 16,
+  "note": "same canvas as xp_bar_frame; setCrop(0,0,w*xp,h)"
+ }
+}
