@@ -1,5 +1,5 @@
 {
- "_note": "Portrait 576x1024 base: logo (cropped above debris) top, orc_on_rock_portrait middle with its 60px fade over the horizon/lava band, wood panel lower third over the fade. Logo: clean 2x HD cut-out (logo_portrait_hd.png 1352x381, LINEAR) at s0.33 -> 446px wide, centred.",
+ "_note": "Portrait 576x1024 base: logo (cropped above debris) top, orc_on_rock_portrait middle with its 60px fade over the horizon/lava band, wood panel lower third over the fade. Logo: clean 2x HD cut-out (logo_portrait_hd.png 1352x381, LINEAR) at s0.33 -> 446px wide, centred. Logo y is computed in world.js applyLayout: dropped to sit 'gap' base px above the orc topknot (never above the top margin).",
  "_base": {
   "w": 576,
   "h": 1024
@@ -26,13 +26,15 @@
   "x": 65,
   "y": 135,
   "s": 0.33,
-  "tex": "menu_logo_portrait"
+  "tex": "menu_logo_portrait",
+  "gap": 16
  },
  "logo_options": {
   "x": 65,
   "y": 135,
   "s": 0.33,
-  "tex": "menu_logo_portrait"
+  "tex": "menu_logo_portrait",
+  "gap": 16
  },
  "panel": {
   "x": 147,
@@ -126,5 +128,34 @@
   "h": 41,
   "x": 128,
   "y": 916
+ },
+ "levelup": {
+  "_note": "level-up overlay: cards stacked inside the safe area; card scale = min(1, fit)",
+  "margin": 20,
+  "headerHalf": 43,
+  "padTop": 54,
+  "padBot": 72,
+  "gap": 12,
+  "rows": {
+   "_note": "portrait: each offer is a row = slim card (frame+icon+pips) + text plate. Text sizes from CSS-px cap-height targets.",
+   "title_cap_css": 12.5,
+   "desc_cap_css": 10.5,
+   "max_h": 330,
+   "side_pad": 22,
+   "gap": 14,
+   "plate_pad": 18,
+   "thumb_max_frac": 0.42
+  },
+  "cards_p": {
+   "_note": "build5 portrait: 3 desktop-style cards side by side; font px = CSS px of the 13-unit em; cards grow taller instead of shrinking text",
+   "margin": 6,
+   "side_pad": 8,
+   "gap": 6,
+   "title_px": 12,
+   "desc_px": 10,
+   "text_w": 124,
+   "padTop": 58,
+   "padBot": 26
+  }
  }
 }

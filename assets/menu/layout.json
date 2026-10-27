@@ -135,5 +135,21 @@
   "y": 0,
   "w": 1024,
   "h": 576
+ },
+ "levelup": {
+  "_note": "level-up overlay (layout px, 1024x576)",
+  "panel": {
+   "x": 202,
+   "y": 143
+  },
+  "header": {
+   "cx": 512,
+   "cy": 143
+  },
+  "cards": {
+   "x": 222,
+   "y": 184,
+   "gap": 20
+  }
  }
 }
