@@ -62,10 +62,10 @@ window.MOOD = { vignette:{ enabled:true, key:'fx_vignette', file:'../assets/ui/f
 window.DEBUG = { god:false, timeScale:1 };
 window.ASSETS = { ground:{ file:null, tile:64 } };
 // HD UI set (assets/ui/ui_hd.json + hud_portrait_rage): display size in layout px. Files: <name>_hd.png (4x) / <name>_hd2.png (2x pre-shrunk).
-window.UI_HD={"hud_frame":[83,71],"hp_bar_frame":[220,20],"hp_fill":[220,20],"xp_bar_frame":[220,8],"xp_fill":[220,8],"ability_slot":[72,72],"pause_button":[66,66],"panel_pause":[416,315],"button_home":[84,32],"button_home_hover":[84,32],"joy_base":[128,128],"joy_knob":[60,60],"icon_axe_cleave":[56,56],"icon_whirlwind":[56,56],"icon_war_stomp":[56,56],"icon_rage_roar":[56,56],"chip_wave":[120,28],"chip_timer":[62,28],"hud_portrait_rage":[50,52],"bracket_corner":[50,50.5],"bracket_side":[34,46.75],"bracket_bottom":[88,33.75],"label_music":[96,32],"label_sfx":[96,32],"label_back":[84,32],"label_back_hover":[84,32],"label_home":[84,32],"label_home_hover":[84,32]};
+window.UI_HD={"hud_frame":[83,71],"orc_on_rock_portrait":[540,448],"hp_bar_frame":[220,20],"hp_fill":[220,20],"xp_bar_frame":[220,8],"xp_fill":[220,8],"ability_slot":[72,72],"pause_button":[66,66],"panel_pause":[416,315],"button_home":[84,32],"button_home_hover":[84,32],"joy_base":[128,128],"joy_knob":[60,60],"icon_axe_cleave":[56,56],"icon_whirlwind":[56,56],"icon_war_stomp":[56,56],"icon_rage_roar":[56,56],"chip_wave":[120,28],"chip_timer":[62,28],"hud_portrait_rage":[50,52],"bracket_corner":[50,50.5],"bracket_side":[34,46.75],"bracket_bottom":[88,33.75],"label_music":[96,32],"label_sfx":[96,32],"label_back":[84,32],"label_back_hover":[84,32],"label_home":[84,32],"label_home_hover":[84,32]};
 // Painted HD iron brackets laid over the menu/options panels (centre x,y in panel px). Covers the old flat pixel plates.
 window.BRACKETS={panel:[["corner",25,49.5],["corner",256,49],["corner",25,296],["corner",256,295.5],["side",18.5,159],["side",264.5,155],["bottom",138,304.5]],
  panel_options:[["corner",26,56],["corner",389,56.5],["corner",26,280.5],["corner",388.5,282],["side",20,170.5],["side",396,170.5],["bottom",194,289.5]]};
 
 // bump when art in ../assets/ui changes so browsers/CDNs refetch (appended as ?v=)
-window.ASSET_V='20261027-slider5';
+window.ASSET_V='20261027-build8';

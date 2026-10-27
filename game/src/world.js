@@ -3,19 +3,28 @@
 const ORIENT_FORCE=new URLSearchParams(location.search).get('orient');
 const wantPortrait=()=>ORIENT_FORCE?ORIENT_FORCE==='portrait':innerHeight>innerWidth;
 const isPortrait=s=>s.scale.gh>s.scale.gw;
-const FONT_X=4;const FONT_CHARS=' 0123456789:/-+.!ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const FONT_X=4;const FONT_CHARS=' 0123456789:/-+.!ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz%,\'()';
 function applyLayout(s){if(!isPortrait(s)||!window.LJ_P){window.LJ=LJ_L;return}
  // Portrait menu: fit to the real screen with safe margins. Logo scaled to fit the width and pinned to the top,
  // panel (+ its buttons/sliders, unscaled so slider math stays exact) pinned to the bottom, orc fitted in the gap
  // so his rock only tucks a little behind the panel top (no more cut-off legs/axe).
  const B=PORTRAIT.base,gw=s.scale.gw,gh=s.scale.gh,si=safeInsets(s),M=PORTRAIT.margin||28,ox=Math.round((gw-B.w)/2),m=Object.assign({},LJ_L);
  const lg=LJ_P.logo,lt=s.textures.exists(lg.tex)?s.textures.get(lg.tex).getSourceImage():{width:676,height:228};
- const ls=Math.min(lg.s||1,(gw-2*M-si.l-si.r)/lt.width),lw=lt.width*ls,lx=Math.round(si.l+(gw-si.l-si.r-lw)/2),ly=Math.round(si.t+M+Math.max(0,(gh-B.h)*0.25));
+ const ls=Math.min(lg.s||1,(gw-2*M-si.l-si.r)/lt.width),lw=lt.width*ls,lx=Math.round(si.l+(gw-si.l-si.r-lw)/2);let ly=Math.round(si.t+M+Math.max(0,(gh-B.h)*0.25));
  const pBottom=gh-si.b-M,pdy=Math.round(pBottom-1016),pTop=690+pdy;
- const orc=LJ_P.orc_on_rock,ot=s.textures.exists(orc.tex)?s.textures.get(orc.tex).getSourceImage():{width:540,height:448},tuck=PORTRAIT.orcTuck||44;
- const top=ly+lt.height*ls+6,os=Math.min((orc.s||1)*1.2,(pTop+tuck-top)/ot.height,(gw-2*M)/ot.width),ow=ot.width*os,oxx=Math.round((gw-ow)/2),oyy=Math.round(pTop+tuck-ot.height*os);
+ const orc=LJ_P.orc_on_rock,os0=s.textures.exists(orc.tex)?s.textures.get(orc.tex).getSourceImage():{width:540,height:448},od=UI_DISP[orc.tex],ot=od?{width:od[0],height:od[1]}:os0,oTex=od?od[0]/os0.width:1,tuck=PORTRAIT.orcTuck||44;
+ // Rock removed (build6): orc+axe visible bbox (art 42..489 x 6..385 of 540x448) is centred horizontally on the panel skull
+ // and vertically between the logo and the skull top with equal gaps (lg.gap, 16); the logo follows him down.
+ const V=orc.vis||[42,6,489,385],sw=ot.width/540,vt=V[1]*sw,vh=(V[3]-V[1])*sw,vw=(V[2]-V[0])*sw,vcx=(V[0]+V[2])/2*sw;
+ const skT=pTop+(PORTRAIT.skullTop||7),skX=ox+147+(PORTRAIT.skullCx||141),g=lg.gap||16,lb=lt.height*ls*(lg.botFrac||0.9686);
+ // Belt-buckle skull (art x 158.1/540) sits exactly over the panel skull; scale down only as far as needed to keep the axe (art x 489.75) >=6px inside the right edge.
+// build9: Ryan asked for the orc "a bit left" -> shift 20 game px (~14 css px @412, ~12.5 @360), scale unchanged, logo untouched.
+ const bx=(orc.beltX||158.1)*sw,em=PORTRAIT.edgeMin||6;
+ const os=Math.min((orc.s||1)*1.2,(skT-2*g-(ly+lb))/vh,(gw-em-skX)/(V[2]*sw-bx),(skX-em)/(bx-V[0]*sw));
+ const oyy=Math.round(skT-g-(vt+vh)*os),oxx=Math.round(skX-bx*os)-(PORTRAIT.orcShiftL??20);
+ const lyB=Math.round(oyy+vt*os-g-lb);if(lyB>ly)ly=lyB;
  for(const[k,v]of Object.entries(LJ_P)){if(k[0]==='_')continue;if(typeof v!=='object'){m[k]=v+ox;continue}m[k]=Object.assign({},v);if(v.cover)continue;
-  if(k.startsWith('logo')){m[k].x=lx;m[k].y=ly;m[k].s=ls}else if(k.startsWith('orc')){m[k].x=oxx;m[k].y=oyy;m[k].s=os}
+  if(k.startsWith('logo')){m[k].x=lx;m[k].y=ly;m[k].s=ls}else if(k.startsWith('orc')){m[k].x=oxx;m[k].y=oyy;m[k].s=os*oTex}
   else{if('x'in v)m[k].x=v.x+ox;if('y'in v)m[k].y=v.y+pdy}}
  window.LJ=m}
 // safe-area insets in game px
@@ -26,7 +35,7 @@ function safeInsets(s){let d=document.getElementById('safeprobe');if(!d){d=docum
 const UI_MAP={ability_slot:'slot',pause_button:'pause_btn',joy_base:'joy_base',joy_knob:'joy_knob',hud_frame:'hud_frame',hud_portrait_rage:'hud_portrait_rage',hp_bar_frame:'hp_bar_frame',hp_fill:'bar_hp',xp_bar_frame:'xp_bar_frame',xp_fill:'bar_xp',
  icon_axe_cleave:'icon_axe_cleave',icon_whirlwind:'icon_whirlwind',icon_war_stomp:'icon_war_stomp',icon_rage_roar:'icon_rage_roar',panel_pause:'ui_panel_pause',button_home:'ui_button_home',button_home_hover:'ui_button_home_hover',bracket_corner:'ui_bracket_corner',bracket_side:'ui_bracket_side',bracket_bottom:'ui_bracket_bottom',label_music:'ui_label_music',label_sfx:'ui_label_sfx',label_back:'ui_label_back',label_back_hover:'ui_label_back_hover',label_home:'ui_label_home',label_home_hover:'ui_label_home_hover',
  menu_bg_portrait:'ui_menu_bg_portrait',orc_on_rock_portrait:'ui_orc_on_rock_portrait',fx_vignette_portrait:'fx_vignette_portrait',fx_ember:'fx_ember_single',chip_wave:'chip_wave',chip_timer:'chip_timer'};
-function loadWorldAssets(s){const U='../assets/ui/';for(const[f,k]of Object.entries(UI_MAP)){if(UI_HD[f]){s.load.image(k,U+f+HD_TIER+'.png?v='+ASSET_V);UI_DISP[k]=UI_HD[f]}else s.load.image(k,U+f+'.png?v='+ASSET_V)}
+function loadWorldAssets(s){if(window.loadLevelUpAssets)loadLevelUpAssets(s);const U='../assets/ui/';for(const[f,k]of Object.entries(UI_MAP)){if(UI_HD[f]){s.load.image(k,U+f+HD_TIER+'.png?v='+ASSET_V);UI_DISP[k]=UI_HD[f]}else s.load.image(k,U+f+'.png?v='+ASSET_V)}
 for(const[k,f]of Object.entries(RAGE.files))if(f)s.load.spritesheet(RAGE.keys[k],f,{frameWidth:RAGE.frameW,frameHeight:RAGE.frameH});
  for(const m of Object.values(MOOD))if(m.file){if(m.frame)s.load.spritesheet(m.key,m.file,{frameWidth:m.frame,frameHeight:m.frame});else s.load.image(m.key,m.file)}}
 function genWorldTextures(s){const T=s.textures,g=s.make.graphics({},false),mk=(k,w,h,fn)=>{if(T.exists(k))return;g.clear();fn(g);g.generateTexture(k,w,h)};
@@ -71,7 +80,7 @@ function genWorldTextures(s){const T=s.textures,g=s.make.graphics({},false),mk=(
   [...FONT_CHARS].forEach((ch,i)=>{const cx=i*fw+fw/2,cy=fh/2+X*0.5;c.strokeText(ch,cx,cy);c.fillText(ch,cx,cy);FONT_ADV[ch]=Math.ceil(c.measureText(ch).width/X)+1})});
  FONT_ADV[' ']=5;{const m=Math.max(...[...'0123456789'].map(d=>FONT_ADV[d]));for(const d of '0123456789')FONT_ADV[d]=m}[...FONT_CHARS].forEach((ch,i)=>{if(!ft.has('c'+i))ft.add('c'+i,0,i*fw,0,fw,fh)});ft.setFilter(Phaser.Textures.FilterMode.LINEAR);g.destroy()}
 // sprite text: container of glyph images
-function spriteText(s,x,y,str,scale=1,tint=0xffffff){const c=s.add.container(x,y);c.sc=scale;c.tint=tint;c.setText=t=>{t=String(t).toUpperCase();if(t===c.txt)return c;c.txt=t;
+function spriteText(s,x,y,str,scale=1,tint=0xffffff,o={}){const c=s.add.container(x,y);c.sc=scale;c.tint=tint;c.setText=t=>{t=o.raw?String(t):String(t).toUpperCase();if(t===c.txt)return c;c.txt=t;
   while(c.list.length<t.length)c.add(s.add.image(0,0,'font','c0').setOrigin(0));
   let ax=0;c.list.forEach((im,i)=>{if(i<t.length){const j=Math.max(0,FONT_CHARS.indexOf(t[i])),adv=FONT_ADV[t[i]]||9;im.setFrame('c'+j).setVisible(true).setPosition((ax+adv/2-6)*c.sc,0).setScale(c.sc/FONT_X).setTint(c.tint);ax+=adv}else im.setVisible(false)});c.tw=ax*c.sc;c.th=14*c.sc;return c};return c.setText(str)}
 const fmtT=ms=>{const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
@@ -79,6 +88,7 @@ function hash(a,b){let h=(a*374761393+b*668265263)|0;h=(h^(h>>>13))*1274126177|0
 
 class Game extends Phaser.Scene{constructor(){super('Game')}
  create(){AUDIO.start();const R_=RAGE;this.st={hp:R_.hp,xp:0,level:1,need:XP.base,wave:1,waveT:0,elapsed:0,kills:0,spawned:0,gemsDropped:0,gemsCollected:0,hits:0,dmg:0,queue:0,spawnAcc:0,waveLog:[]};
+  this.ups={};this.ab={Q:1,W:0,E:0,R:0};this.mods=computeMods({});this.maxHp=R_.hp;this.lvQ=[];this.lvUI=null;this.diff={hp:1,sp:1,spawn:1,forced:[],elite:0};this.roarUntil=0;this.spin=null;this.btKills=0;this.lastUsed=false;this.st.picks=[];
   this.physics.world.setBounds(-1e7,-1e7,2e7,2e7);
   this.rage=this.physics.add.sprite(0,0,R_.keys.idle).setOrigin(.5,R_.anchorY);this.rage.body.setSize(28,16).setOffset(10,R_.frameH*R_.anchorY-14);
   const cam=this.cameras.main;cam.startFollow(this.rage,true,WORLD.camLerp,WORLD.camLerp);cam.setFollowOffset(this.scale.gw/2,this.scale.gh/2);cam.setRoundPixels(true);
@@ -94,8 +104,8 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   this.events.on('resume',()=>{this.joyEnd()});
   this.fpsS=[];window.WSTATS=this.st;window.WORLD_SCENE=this;
   this.updateChunks(true);this.st.queue=this.waveCount(1);this.st.waveLog.push({wave:1,count:this.st.queue,hpMul:1,speedMul:1})}
- onResize(){this.cameras.main.setFollowOffset(this.scale.gw/2,this.scale.gh/2);this.layoutHUD()}
- openPause(){if(this.over||this.scene.isPaused())return;this.joyEnd();this.scene.pause();this.scene.launch('Pause');AUDIO.blip()}
+ onResize(){this.cameras.main.setFollowOffset(this.scale.gw/2,this.scale.gh/2);this.layoutHUD();if(this.lvUI)this.lvUI.layout()}
+ openPause(){if(this.over||this.lvUI||this.scene.isPaused())return;this.joyEnd();this.scene.pause();this.scene.launch('Pause');AUDIO.blip()}
  waveCount(w){return WAVES.baseCount+WAVES.countPerWave*(w-1)}
  mul(w){return{hp:1+WAVES.hpMulPerWave*(w-1),sp:Math.min(WAVES.maxSpeedMul,1+WAVES.speedMulPerWave*(w-1))}}
  // ---------- HUD (all sprites, scrollFactor 0) ----------
@@ -105,7 +115,7 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   h.waveBg=a(0,0,this.textures.exists('chip_wave')?'chip_wave':'hud_chip');h.wave=spriteText(this,0,0,'WAVE 1',1,0xe8d8b0).setScrollFactor(0).setDepth(D+1);
   h.timeBg=a(0,0,this.textures.exists('chip_timer')?'chip_timer':'hud_chip');h.time=spriteText(this,0,0,'00:00',1,0xe8d8b0).setScrollFactor(0).setDepth(D+1);
   h.pause=a(0,0,'pause_btn');h.pause.setInteractive({useHandCursor:true,hitArea:padHitS(h.pause,66,66),hitAreaCallback:Phaser.Geom.Rectangle.Contains}).on('pointerdown',(p,x,y,ev)=>{ev&&ev.stopPropagation&&ev.stopPropagation();this.openPause()});
-  h.slots=['Q','W','E','R'].map(k=>{const A=ABILITIES[k],s={k,bg:a(0,0,'slot'),icon:a(0,0,A.icon).setAlpha(A.id==='locked'?0.45:1),cd:a(0,0,'slot_cd').setVisible(false)};return s});
+  h.slots=['Q','W','E','R'].map(k=>{const A=ABILITIES[k],s={k,bg:a(0,0,'slot'),icon:a(0,0,A.icon).setAlpha(this.ab[k]>0?1:0.45),cd:a(0,0,'slot_cd').setVisible(false)};return s});
   this.layoutHUD()}
  layoutHUD(){const W=this.scale.gw,H=this.scale.gh,P=isPortrait(this),L=HUD[P?'portrait':'landscape'],si=P?safeInsets(this):{t:0,r:0,b:0,l:0},h=this.hud;
   const X=o=>o.right!=null?W-si.r-o.right:si.l+o.x,Y=(o,hh)=>o.bottom!=null?H-si.b-o.bottom-hh:si.t+o.y;
@@ -113,17 +123,17 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   h.hpBg.setPosition(si.l+L.hp.x,si.t+L.hp.y);h.hp.setPosition(si.l+L.hp.x,si.t+L.hp.y);h.hpTxt.setPosition(si.l+L.hp.x+70,si.t+L.hp.y+3);
   h.xpBg.setPosition(si.l+L.xp.x,si.t+L.xp.y);h.xp.setPosition(si.l+L.xp.x,si.t+L.xp.y);
   const cW=h.waveBg.displayWidth,cT=h.timeBg.displayWidth,cH=h.waveBg.displayHeight;
-  if(P){h.waveBg.setPosition(W-si.r-12-cW,si.t+12);h.timeBg.setPosition(W-si.r-12-cT,si.t+12+cH+6)}
-  const pb=L.pause;h.pause.setPosition(W-si.r-pb.right-66,pb.bottom!=null?H-si.b-pb.bottom-66:si.t+pb.y);
+  if(P){const bx=Math.round(h.hpBg.x),by=Math.round(Math.max(h.xpBg.y+h.xpBg.displayHeight+8,h.frame.getBounds().bottom+6));h.waveBg.setPosition(bx,by);h.timeBg.setPosition(bx,by+cH+6)}
+  const pb=L.pause;if(P){const pw=h.pause.displayWidth||66;h.pause.setPosition(Math.round(W-si.r-12-pw),Math.round(si.t+12))}else h.pause.setPosition(W-si.r-pb.right-66,pb.bottom!=null?H-si.b-pb.bottom-66:si.t+pb.y);
   if(!P){const cy=Math.round(h.pause.y+33-cH/2);h.timeBg.setPosition(h.pause.x-8-cT,cy);h.waveBg.setPosition(h.timeBg.x-8-cW,cy)}
   this.centerChips();
   const S=L.slots,sz=S.size,sc=sz/72,n=4,tw=n*sz+(n-1)*S.gap,x0=S.cx!=null?Math.round(W*S.cx-tw/2):si.l+S.left,y0=H-si.b-S.bottom-sz-14;
   h.slots.forEach((s,i)=>{const x=x0+i*(sz+S.gap);s.bg.setPosition(x,y0).setScale(sc*uiS(s.bg));s.icon.setPosition(x+8*sc,y0+8*sc).setScale(sc*uiS(s.icon));s.cd.setPosition(x,y0).setScale(sc)});
   this.hudRect={slotsTop:y0};if(this.vig&&this.vig.scene){const vk=P&&this.textures.exists('fx_vignette_portrait')?'fx_vignette_portrait':MOOD.vignette.key;this.vig.setTexture(vk).setDisplaySize(W,H).setPosition(W/2,H/2)}}
  centerChips(){const h=this.hud;for(const[bg,t]of[[h.waveBg,h.wave],[h.timeBg,h.time]])t.setPosition(Math.round(bg.x+(bg.displayWidth-t.tw)/2),Math.round(bg.y+(bg.displayHeight-16)/2))}
- updateHUD(){const st=this.st,h=this.hud;h.hp.setCrop(0,0,Math.round(h.hp.frame.width*Math.max(0,st.hp)/RAGE.hp),h.hp.frame.height);h.hpTxt.setText(Math.ceil(Math.max(0,st.hp))+'/'+RAGE.hp);h.hpTxt.setPosition(Math.round(h.hpBg.x+(h.hpBg.displayWidth-h.hpTxt.tw)/2),Math.round(h.hpBg.y+(h.hpBg.displayHeight-16)/2));
+ updateHUD(){const st=this.st,h=this.hud;h.hp.setCrop(0,0,Math.round(h.hp.frame.width*Math.max(0,Math.min(1,st.hp/this.maxHp))),h.hp.frame.height);h.hpTxt.setText(Math.ceil(Math.max(0,st.hp))+'/'+Math.round(this.maxHp));h.hpTxt.setPosition(Math.round(h.hpBg.x+(h.hpBg.displayWidth-h.hpTxt.tw)/2),Math.round(h.hpBg.y+(h.hpBg.displayHeight-16)/2));
   h.xp.setCrop(0,0,Math.round(h.xp.frame.width*Math.min(1,st.xp/st.need)),h.xp.frame.height);h.lvl.setText(st.level);if(h.lvlC)h.lvl.setPosition(Math.round(h.lvlC[0]-h.lvl.tw/2),Math.round(h.lvlC[1]-8));h.wave.setText('WAVE '+st.wave);h.time.setText(fmtT(st.elapsed));this.centerChips();
-  for(const s of h.slots){const A=ABILITIES[s.k];if(!A.cooldownMs){s.cd.setVisible(false);continue}const f=Math.max(0,this.abCd[s.k]||0)/A.cooldownMs,N=CD_SWEEP.frames,i=Math.min(N-1,Math.floor((1-f)*N));s.cd.setVisible(f>0).setFrame(i);s.sweepFrame=f>0?i:-1}}
+  for(const s of h.slots){if(!this.ab[s.k]){s.cd.setVisible(false);continue}const f=Math.max(0,this.abCd[s.k]||0)/this.cdMax(s.k),N=CD_SWEEP.frames,i=Math.min(N-1,Math.floor((1-f)*N));s.cd.setVisible(f>0).setFrame(i);s.sweepFrame=f>0?i:-1}}
  // ---------- touch joystick ----------
  buildJoystick(){const D=1e6+5;this.joy={base:uiFit(this.add.image(0,0,'joy_base')).setScrollFactor(0).setDepth(D).setVisible(false),knob:uiFit(this.add.image(0,0,'joy_knob')).setScrollFactor(0).setDepth(D+1).setVisible(false),v:new Phaser.Math.Vector2(),ptr:null};
   this.input.on('pointerdown',(p,over)=>{if(over.length||this.joy.ptr)return;if(isPortrait(this)&&PY(p)<this.scale.gh*TOUCH.portraitZoneFrom)return;
@@ -154,57 +164,79 @@ class Game extends Phaser.Scene{constructor(){super('Game')}
   const cw=(cam.width/cam.zoom),ch=(cam.height/cam.zoom);this.canopy.forEach((c,i)=>{const sx=cam.scrollX*1.25,sy=cam.scrollY*1.25,span=cw+400;let x=((i*397-sx)%span+span)%span-200,y=((i*233-sy)%(ch+300)+(ch+300))%(ch+300)-150;
    c.setPosition(Math.round(x+sx),Math.round(y+sy))})}
  // ---------- enemies ----------
- pickType(){const w=this.st.wave,list=Object.entries(ENEMIES).filter(([,e])=>w>=e.unlockWave),tot=list.reduce((a,[,e])=>a+e.weight,0);let r=Math.random()*tot;for(const[id,e]of list){r-=e.weight;if(r<=0)return id}return list[0][0]}
+ pickType(){const w=this.st.wave,list=Object.entries(ENEMIES).filter(([id,e])=>w>=e.unlockWave||this.diff.forced.includes(id)),tot=list.reduce((a,[,e])=>a+e.weight,0);let r=Math.random()*tot;for(const[id,e]of list){r-=e.weight;if(r<=0)return id}return list[0][0]}
  spawn(){if(this.enemies.length>=WAVES.maxAlive)return false;const id=this.pickType(),E=ENEMIES[id],m=this.mul(this.st.wave),cam=this.cameras.main,
    rad=Math.hypot((cam.width/cam.zoom),(cam.height/cam.zoom))/2+WORLD.spawnMargin,a=Math.random()*Math.PI*2;
   const e=(this.enemyPool.pop()||this.add.image(0,0,'en_'+id).setOrigin(.5,.9));e.setTexture('en_'+id).setVisible(true).setAlpha(1).setScale(1).setActive(true);
-  e.setPosition(this.rage.x+Math.cos(a)*rad,this.rage.y+Math.sin(a)*rad);Object.assign(e,{type:id,hp:E.hp*m.hp,maxHp:E.hp*m.hp,spd:E.speed*m.sp,dmgv:E.dmg,xpv:E.xp,flash:0,dead:false,ccd:0,kx:0,ky:0,jit:(Math.random()-.5)*.6});
+  e.setPosition(this.rage.x+Math.cos(a)*rad,this.rage.y+Math.sin(a)*rad);const el=Math.random()<Math.min(.6,.15*this.diff.elite),hm=m.hp*this.diff.hp*(el?1.6:1);e.setTint(el?0xffb070:0xffffff);if(el)e.setScale(1.15);
+  Object.assign(e,{elite:el,stun:0,fear:0,type:id,hp:E.hp*hm,maxHp:E.hp*hm,spd:E.speed*m.sp*this.diff.sp,dmgv:E.dmg,xpv:E.xp,flash:0,dead:false,ccd:0,kx:0,ky:0,jit:(Math.random()-.5)*.6});
   this.enemies.push(e);this.st.spawned++;return true}
- hitEnemy(e,dmg){if(e.dead)return;e.hp-=dmg;this.st.hits++;this.st.dmg+=dmg;e.flash=ATTACK.flashMs;e.setTexture('en_'+e.type+'_w');
+ hitEnemy(e,dmg){if(e.dead)return;const M=this.mods,crit=M.crit>0&&Math.random()<M.crit;dmg*=this.outMul()*(crit?M.critDmg:1);if(crit)this.st.crits=(this.st.crits||0)+1;e.hp-=dmg;this.st.hits++;this.st.dmg+=dmg;e.flash=ATTACK.flashMs;e.setTexture('en_'+e.type+'_w');
   const dx=e.x-this.rage.x,dy=e.y-this.rage.y,d=Math.hypot(dx,dy)||1;e.kx+=dx/d*ATTACK.knockback;e.ky+=dy/d*ATTACK.knockback;this.dmgNum(e.x,e.y-e.height,Math.round(dmg));
   if(e.hp<=0)this.kill(e)}
- kill(e){e.dead=true;this.st.kills++;this.dropGem(e.x,e.y,e.xpv);this.tweens.add({targets:e,alpha:0,scaleY:.2,duration:220,onComplete:()=>{e.setVisible(false).setActive(false);this.enemies.splice(this.enemies.indexOf(e),1);this.enemyPool.push(e)}})}
+ kill(e){e.dead=true;this.st.kills++;if(this.mods.killHeal&&++this.btKills>=8){this.btKills=0;this.heal(this.mods.killHeal)}this.dropGem(e.x,e.y,e.xpv);this.tweens.add({targets:e,alpha:0,scaleY:.2,duration:220,onComplete:()=>{e.setVisible(false).setActive(false);this.enemies.splice(this.enemies.indexOf(e),1);this.enemyPool.push(e)}})}
  dmgNum(x,y,n){let c=this.numPool.pop();if(!c)c=spriteText(this,0,0,'',DMG_NUM.scale,0xffe0a0);c.setText(String(n)).setPosition(Math.round(x-c.tw/2),Math.round(y)).setVisible(true).setAlpha(1).setDepth(9e5);
   this.tweens.add({targets:c,y:y-DMG_NUM.rise,alpha:0,duration:DMG_NUM.ms,onComplete:()=>{c.setVisible(false);this.numPool.push(c)}})}
  fx(key,x,y,rot,ms,scaleTo){const f=(this.fxPool.pop()||this.add.image(0,0,key)).setTexture(key).setPosition(x,y).setRotation(rot).setAlpha(1).setScale(1).setVisible(true).setDepth(y+1);
   this.tweens.add({targets:f,alpha:0,scale:scaleTo||1.2,duration:ms,onComplete:()=>{f.setVisible(false);this.fxPool.push(f)}})}
  dropGem(x,y,v){const g=(this.gemPool.pop()||this.add.image(0,0,'xp_gem'));g.setPosition(x,y-6).setVisible(true).setDepth(y-30);g.val=v*XP.gemValue;g.mag=false;this.gems.push(g);this.st.gemsDropped++}
  nearest(range){let best=null,bd=range*range;for(const e of this.enemies){if(e.dead)continue;const d=(e.x-this.rage.x)**2+(e.y-this.rage.y)**2;if(d<bd){bd=d;best=e}}return best}
- fireAbility(k,manual){const A=ABILITIES[k];if(!A||A.id==='locked'||(this.abCd[k]||0)>0)return false;
-  if(A.id==='cleave'){const r2=A.radius**2;let n=0;for(const e of this.enemies.slice())if(!e.dead&&(e.x-this.rage.x)**2+(e.y-this.rage.y)**2<r2){this.hitEnemy(e,A.damage);n++}
-   if(!manual&&!n)return false;this.fx('ring',this.rage.x,this.rage.y-20,0,300,A.radius/60);this.st.abilityUses=(this.st.abilityUses||0)+1}
-  this.abCd[k]=A.cooldownMs;return true}
- gainXp(v){const st=this.st;st.xp+=v;while(st.xp>=st.need){st.xp-=st.need;st.level++;st.need=Math.round(XP.base*Math.pow(XP.growth,st.level-1));this.cameras.main.flash(120,255,200,80)}}
+ cdMax(k){return AB_DEF[k](Math.max(1,this.ab[k])).cd*this.mods.cd}
+ outMul(){const M=this.mods;let m=M.dmg;if(M.berserk)m*=1+.4*Phaser.Math.Clamp(1-this.st.hp/this.maxHp,0,1);if(this.st.elapsed<this.roarUntil)m*=1+this.roarBuff;return m}
+ heal(n){this.st.hp=Math.min(this.maxHp,this.st.hp+n)}
+ inR(r){const r2=r*r;return this.enemies.filter(e=>!e.dead&&(e.x-this.rage.x)**2+(e.y-this.rage.y)**2<r2)}
+ fireAbility(k,manual){const lv=this.ab[k];if(!lv||(this.abCd[k]||0)>0)return false;const P=AB_DEF[k](lv),st=this.st,r=this.rage;
+  if(k==='Q'){const hit=this.inR(P.r);if(!manual&&!hit.length)return false;for(const e of hit)this.hitEnemy(e,P.dmg);this.fx('ring',r.x,r.y-20,0,300,P.r/60)}
+  else if(k==='W'){if(!manual&&!this.inR(P.r*1.3).length)return false;this.spin={until:st.elapsed+P.dur,next:0,P};}
+  else if(k==='E'){const hit=this.inR(P.r);if(!manual&&!hit.length)return false;for(const e of hit){this.hitEnemy(e,P.dmg);e.stun=st.elapsed+P.stun}this.fx('ring',r.x,r.y-6,0,380,P.r/50);this.cameras.main.shake(120,.004)}
+  else if(k==='R'){const hit=this.inR(P.r);if(!manual&&!hit.length)return false;for(const e of hit)e.fear=st.elapsed+P.fear;this.roarUntil=st.elapsed+P.buffMs;this.roarBuff=P.buff;this.fx('ring',r.x,r.y-20,0,450,P.r/55);r.setTint(0xffc060);this.time.delayedCall(200,()=>r.clearTint())}
+  st.abilityUses=(st.abilityUses||0)+1;st.abUse=st.abUse||{};st.abUse[k]=(st.abUse[k]||0)+1;this.abCd[k]=this.cdMax(k);return true}
+ // ---------- level-ups ----------
+ lvState(){return{ups:this.ups,ab:this.ab}}
+ levelDifficulty(L){const d=this.diff;d.hp*=1.08;d.spawn*=1.05;d.sp=Math.min(1.4,1+.03*(L-1));
+  if(L%5===0){const next=Object.entries(ENEMIES).sort((a,b)=>a[1].unlockWave-b[1].unlockWave).find(([id,e])=>this.st.wave<e.unlockWave&&!d.forced.includes(id));if(next)d.forced.push(next[0]);else d.elite++}}
+ applyUpgrade(u){if(typeof u==='string')u=UPG_BY[u];const old=this.maxHp;
+  if(u.ab){this.ab[u.ab]=Math.min(u.max,this.ab[u.ab]+1);if(this.ab[u.ab]===1){this.abCd[u.ab]=0;const sl=this.hud.slots.find(x=>x.k===u.ab);if(sl)sl.icon.setAlpha(1)}}
+  else if(u.id!=='second_wind')this.ups[u.id]=(this.ups[u.id]||0)+1;
+  this.mods=computeMods(this.ups);this.maxHp=RAGE.hp*this.mods.maxHp;this.st.maxHp=this.maxHp;this.st.hp+=this.maxHp-old;
+  if(u.id==='stone_hide')this.heal(this.maxHp*.2);if(u.id==='stone_hide_plus')this.heal(this.maxHp*.4);if(u.id==='second_wind')this.heal(this.maxHp*.3);return u}
+ openLevelUp(forced){const L=forced?this.st.level:this.lvQ.shift();this.joyEnd();this.physics.pause();this.tweens.pauseAll();this.time.paused=true;
+  const offer=forced?forced.map(id=>UPG_BY[id]):rollOffer(this.lvState(),L);this.lvOffer=offer.map(x=>x.id);this.lvUI=new LevelUpOverlay(this,offer,u=>this.closeLevelUp(u,L));this.st.lvOpenAt=this.st.elapsed;
+  if(window.DEBUG&&DEBUG.autoPick)setTimeout(()=>this.lvUI&&this.lvUI.pick(0),320)}
+ closeLevelUp(u,L){this.applyUpgrade(u);this.st.picks.push({level:L,id:u.id,offer:this.lvOffer});this.lvUI=null;this.physics.resume();this.tweens.resumeAll();this.time.paused=false;
+  this.invuln=1000;this.keys.SPACE.reset();AUDIO.blip()}
+ gainXp(v){const st=this.st;st.xp+=v*this.mods.xp;while(st.xp>=st.need){st.xp-=st.need;st.level++;this.lvQ.push(st.level);this.levelDifficulty(st.level);st.need=Math.round(XP.base*Math.pow(XP.growth,st.level-1));this.cameras.main.flash(120,255,200,80)}}
  gameOver(){this.over=true;this.rage.setVelocity(0,0).setAlpha(.4);const W=this.scale.gw,H=this.scale.gh,t=spriteText(this,0,0,'RAGE HAS FALLEN',3,0xd83a2a).setScrollFactor(0).setDepth(2e6);t.setPosition(Math.round(W/2-t.tw/2),Math.round(H/2-20));
   this.time.delayedCall(2200,()=>this.scene.start('Menu'))}
- update(t,dtRaw){if(this.over)return;const dt=Math.min(50,dtRaw)*DEBUG.timeScale,st=this.st,k=this.keys,r=this.rage;st.elapsed+=dt;
+ update(t,dtRaw){if(this.over)return;if(this.lvUI)return;const dt=Math.min(50,dtRaw)*DEBUG.timeScale,st=this.st,k=this.keys,r=this.rage;st.elapsed+=dt;
   this.fpsS.push(this.game.loop.actualFps);if(this.fpsS.length>600)this.fpsS.shift();st.fps=Math.round(this.game.loop.actualFps);
   // move (keyboard + joystick), dash (space)
   const v=new Phaser.Math.Vector2((k.D.isDown||k.RIGHT.isDown)-(k.A.isDown||k.LEFT.isDown),(k.S.isDown||k.DOWN.isDown)-(k.W.isDown||k.UP.isDown));
   if(!v.lengthSq()&&this.joy.v.lengthSq())v.copy(this.joy.v);const mag=Math.min(1,v.length());if(mag)this.face=v.clone().normalize();
   if(Phaser.Input.Keyboard.JustDown(k.SPACE)&&st.elapsed>=this.dashReady){this.dashUntil=st.elapsed+RAGE.dashMs;this.dashReady=st.elapsed+RAGE.dashCooldownMs;this.cameras.main.shake(80,.003);AUDIO.blip()}
-  const dashing=st.elapsed<this.dashUntil,sp=(dashing?RAGE.dashSpeed:RAGE.speed*mag)*DEBUG.timeScale,d=dashing?this.face:(mag?v.clone().normalize():v);
+  const dashing=st.elapsed<this.dashUntil,sp=(dashing?RAGE.dashSpeed:RAGE.speed*this.mods.speed*mag)*DEBUG.timeScale,d=dashing?this.face:(mag?v.clone().normalize():v);
   r.setVelocity(d.x*sp,d.y*sp).setAlpha(dashing?.6:(this.invuln>0?.7:1)).setDepth(r.y);if(v.x)r.setFlipX(v.x<0);st.moving=mag>0;st.rx=Math.round(r.x);st.ry=Math.round(r.y);
   this.updateChunks();this.updateEmbers(dt);
   // waves
   st.waveT+=dt;if(st.waveT>=WAVES.durationS*1000){st.waveT=0;st.wave++;st.queue+=this.waveCount(st.wave);const m=this.mul(st.wave);st.waveLog.push({wave:st.wave,count:this.waveCount(st.wave),hpMul:+m.hp.toFixed(2),speedMul:+m.sp.toFixed(2),atS:Math.round(st.elapsed/1000)})}
-  st.spawnAcc+=dt*this.waveCount(st.wave)/(WAVES.durationS*600);while(st.queue>0&&st.spawnAcc>=1){st.spawnAcc-=1/WAVES.burst;if(!this.spawn())break;st.queue--}
+  st.spawnAcc+=dt*this.diff.spawn*this.waveCount(st.wave)/(WAVES.durationS*600);while(st.queue>0&&st.spawnAcc>=1){st.spawnAcc-=1/WAVES.burst;if(!this.spawn())break;st.queue--}
   // enemies
-  const s=dt/1000,cam=this.cameras.main;this.invuln-=dt;
+  const s=dt/1000,cam=this.cameras.main;this.invuln-=dt;if(this.mods.regen&&st.hp>0)this.heal(this.mods.regen*s);
+  if(this.spin){if(st.elapsed>this.spin.until)this.spin=null;else if(st.elapsed>=this.spin.next){this.spin.next=st.elapsed+this.spin.P.tick;for(const e of this.inR(this.spin.P.r))this.hitEnemy(e,this.spin.P.dmg);this.fx('slash',r.x,r.y-18,st.elapsed/80,200,1.6)}}
   for(const e of this.enemies){if(e.dead)continue;if(e.flash>0){e.flash-=dt;if(e.flash<=0)e.setTexture('en_'+e.type)}
    let dx=r.x-e.x,dy=r.y-e.y;const dd=Math.hypot(dx,dy)||1;if(dd>WORLD.despawnDist){const a=Math.random()*Math.PI*2,rad=Math.hypot((cam.width/cam.zoom),(cam.height/cam.zoom))/2+WORLD.spawnMargin;e.setPosition(r.x+Math.cos(a)*rad,r.y+Math.sin(a)*rad);continue}
-   const c=Math.cos(e.jit),sn=Math.sin(e.jit),ux=(dx*c-dy*sn)/dd,uy=(dx*sn+dy*c)/dd;e.x+=(ux*e.spd+e.kx)*s;e.y+=(uy*e.spd+e.ky)*s;e.kx*=.85;e.ky*=.85;e.setDepth(e.y);if(ux)e.setFlipX(ux<0);
-   e.ccd-=dt;if(dd<26&&e.ccd<=0&&this.invuln<=0){e.ccd=WAVES.contactCdMs;this.invuln=RAGE.invulnMs;if(!DEBUG.god)st.hp-=e.dmgv;st.hurt=(st.hurt||0)+1;r.setTint(0xff6060);this.time.delayedCall(90,()=>r.clearTint())}}
+   const c=Math.cos(e.jit),sn=Math.sin(e.jit),ux=(dx*c-dy*sn)/dd,uy=(dx*sn+dy*c)/dd;const mv=e.stun>st.elapsed?0:e.fear>st.elapsed?-1.1:1;e.x+=(ux*e.spd*mv+e.kx)*s;e.y+=(uy*e.spd*mv+e.ky)*s;e.kx*=.85;e.ky*=.85;e.setDepth(e.y);if(ux)e.setFlipX(ux<0);
+   e.ccd-=dt;if(dd<26&&e.ccd<=0&&this.invuln<=0){e.ccd=WAVES.contactCdMs;this.invuln=RAGE.invulnMs;if(!DEBUG.god){st.hp-=e.dmgv*this.mods.taken;if(st.hp<=0&&this.mods.lastStand&&!this.lastUsed){this.lastUsed=true;st.hp=this.maxHp*.3;this.invuln=1500;st.lastStand=true;this.cameras.main.flash(200,255,60,40)}}st.hurt=(st.hurt||0)+1;r.setTint(0xff6060);this.time.delayedCall(90,()=>r.clearTint())}}
   st.alive=this.enemies.filter(e=>!e.dead).length;st.maxAlive=Math.max(st.maxAlive||0,st.alive);
   // auto attack
   this.atkCd-=dt;if(this.atkCd<=0){const e=this.nearest(ATTACK.range);if(e){this.atkCd=ATTACK.cooldownMs;this.fx('slash',(r.x+e.x)/2,(r.y+e.y)/2-18,Math.atan2(e.y-r.y,e.x-r.x),ATTACK.slashMs);this.hitEnemy(e,ATTACK.damage)}}
   // abilities (auto)
-  for(const kk of Object.keys(this.abCd)){this.abCd[kk]-=dt;if(this.abCd[kk]<=0&&ABILITIES[kk].auto)this.fireAbility(kk,false)}
+  for(const kk of Object.keys(this.abCd)){this.abCd[kk]-=dt;if(this.abCd[kk]<=0&&this.ab[kk]>0)this.fireAbility(kk,false)}
   // gems
-  for(let i=this.gems.length-1;i>=0;i--){const g=this.gems[i],dx=r.x-g.x,dy=(r.y-14)-g.y,d=Math.hypot(dx,dy);if(d<RAGE.pickupRadius)g.mag=true;
+  for(let i=this.gems.length-1;i>=0;i--){const g=this.gems[i],dx=r.x-g.x,dy=(r.y-14)-g.y,d=Math.hypot(dx,dy);if(d<RAGE.pickupRadius*this.mods.pickup)g.mag=true;
    if(g.mag){const m=RAGE.magnetSpeed*s;g.x+=dx/d*Math.min(m,d);g.y+=dy/d*Math.min(m,d)}
    if(d<RAGE.collectRadius){g.setVisible(false);this.gems.splice(i,1);this.gemPool.push(g);st.gemsCollected++;this.gainXp(g.val)}}
-  st.gemsOnGround=this.gems.length;this.updateHUD();if(st.hp<=0)this.gameOver()}}
+  st.gemsOnGround=this.gems.length;this.updateHUD();if(st.hp<=0)return this.gameOver();if(this.lvQ.length&&!this.lvUI)this.openLevelUp()}}
 
 class Pause extends Phaser.Scene{constructor(){super('Pause')}
  create(){const W=this.scale.gw,H=this.scale.gh;window.SLIDERS={};
