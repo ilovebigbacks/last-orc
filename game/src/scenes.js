@@ -1,7 +1,7 @@
 const W=BASE.w,H=BASE.h, hasSave=()=>!!localStorage.getItem('lastorc_save');
 class Boot extends Phaser.Scene{constructor(){super('Boot')}
  preload(){const P=MENU_PIECES,D=MENU_DIR;this.load.on('loaderror',f=>console.warn('missing asset (fallback):',f.key));
-  for(const k of['background','logo','orc_rock','panel','panel_options','background_options','logo_options','orc_options','cursor','cursor_options','slider_track','slider_fill','slider_handle'])this.load.image('menu_'+k,D+P[k]);this.load.image('menu_logo_portrait','../assets/menu/logo_portrait.png');
+  for(const k of['background','logo','orc_rock','panel','panel_options','background_options','logo_options','orc_options','cursor','cursor_options','slider_track','slider_fill','slider_handle'])this.load.image('menu_'+k,D+P[k]);this.load.image('menu_logo_portrait','../assets/menu/logo_portrait_hd.png');
   this.load.atlas('menu_buttons',D+P.buttons.png,D+P.buttons.json);this.load.json('menu_layout',D+P.layout);this.load.json('menu_layout_portrait',D+PORTRAIT.layout);loadWorldAssets(this);
   this.load.image('fb_main',MENU_FALLBACK.main);this.load.image('fb_options',MENU_FALLBACK.options);
   for(const[k,a]of Object.entries(ASSETS))if(a.file){a.frameWidth?this.load.spritesheet(k,a.file,{frameWidth:a.frameWidth,frameHeight:a.frameHeight}):this.load.image(k,a.file)}}
@@ -10,7 +10,7 @@ class Boot extends Phaser.Scene{constructor(){super('Boot')}
    for(let i=0;i<40;i++){g.fillStyle([0x3a3826,0x24231a,0x3d2f22,0x2f3a22][i%4]).fillRect(Math.random()*t|0,Math.random()*t|0,4,4)}
    g.generateTexture('ground',t,t);g.clear()}
 
-  window.LJ_L=this.cache.json.get('menu_layout')||null;window.LJ_P=this.cache.json.get('menu_layout_portrait')||null;window.LJ=LJ_L;genWorldTextures(this);for(const k of Object.keys(UI_DISP))if(this.textures.exists(k))this.textures.get(k).setFilter(Phaser.Textures.FilterMode.LINEAR);window.LAYOUT=DEFAULT_LAYOUT;
+  window.LJ_L=this.cache.json.get('menu_layout')||null;window.LJ_P=this.cache.json.get('menu_layout_portrait')||null;window.LJ=LJ_L;genWorldTextures(this);if(this.textures.exists('menu_logo_portrait'))this.textures.get('menu_logo_portrait').setFilter(Phaser.Textures.FilterMode.LINEAR);for(const k of Object.keys(UI_DISP))if(this.textures.exists(k))this.textures.get(k).setFilter(Phaser.Textures.FilterMode.LINEAR);window.LAYOUT=DEFAULT_LAYOUT;
   window.PIECES=!!LJ&&['background','logo','panel','panel_options','buttons','slider_track','slider_fill','slider_handle'].every(k=>this.textures.exists('menu_'+k));
   this.scene.start('Menu')}}
 // finger-sized hit area (>= TOUCH.minTap game px) centred on an origin-0 image

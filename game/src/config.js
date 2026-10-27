@@ -27,7 +27,7 @@ window.DEFAULT_LAYOUT = {
 // ===================== OPEN WORLD (placeholders; all tuning here) =====================
 // Orientation: desktop/landscape = 1024x576 FIT. Phones in portrait = 576x1024 base, EXPAND (fills 9:19.5) + safe-area insets.
 // Force with ?orient=portrait|landscape. Portrait menu positions: assets/menu/layout_portrait.json (fallback: landscape layout.json).
-window.PORTRAIT = { base:{w:576,h:1024}, layout:'layout_portrait.json' };
+window.PORTRAIT = { base:{w:576,h:1024}, layout:'layout_portrait.json', margin:28, orcTuck:44 };  // menu safe margin + how far the orc's faded rock tucks behind the panel
 // Rage: sprite NOT approved yet -> neutral placeholder. Drop real art in by setting files (spritesheets) - keys stay the same.
 window.RAGE = { keys:{ idle:'rage_idle', walk:'rage_walk', attack:'rage_attack', hit:'rage_hit', death:'rage_death', portrait:'rage_portrait' },
   files:{ idle:null, walk:null, attack:null, hit:null, death:null, portrait:null }, frameW:48, frameH:64, anchorY:0.9,
@@ -65,4 +65,4 @@ window.ASSETS = { ground:{ file:null, tile:64 } };
 window.UI_HD={"hud_frame":[83,71],"hp_bar_frame":[220,20],"hp_fill":[220,20],"xp_bar_frame":[220,8],"xp_fill":[220,8],"ability_slot":[72,72],"pause_button":[66,66],"panel_pause":[416,315],"button_home":[84,32],"button_home_hover":[84,32],"joy_base":[128,128],"joy_knob":[60,60],"icon_axe_cleave":[56,56],"icon_whirlwind":[56,56],"icon_war_stomp":[56,56],"icon_rage_roar":[56,56],"chip_wave":[120,28],"chip_timer":[62,28],"hud_portrait_rage":[50,52]};
 
 // bump when art in ../assets/ui changes so browsers/CDNs refetch (appended as ?v=)
-window.ASSET_V='20261026-paint1';
+window.ASSET_V='20261026-logo2';

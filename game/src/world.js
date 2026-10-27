@@ -5,8 +5,18 @@ const wantPortrait=()=>ORIENT_FORCE?ORIENT_FORCE==='portrait':innerHeight>innerW
 const isPortrait=s=>s.scale.gh>s.scale.gw;
 const FONT_X=4;const FONT_CHARS=' 0123456789:/-+.!ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 function applyLayout(s){if(!isPortrait(s)||!window.LJ_P){window.LJ=LJ_L;return}
- const ox=Math.round((s.scale.gw-PORTRAIT.base.w)/2),oy=Math.round((s.scale.gh-PORTRAIT.base.h)/2),m=Object.assign({},LJ_L);
- for(const[k,v]of Object.entries(LJ_P)){if(k[0]==='_')continue;if(typeof v!=='object'){m[k]=v+ox;continue}m[k]=Object.assign({},v);if('x'in v)m[k].x=v.x+ox;if('y'in v)m[k].y=v.y+oy}
+ // Portrait menu: fit to the real screen with safe margins. Logo scaled to fit the width and pinned to the top,
+ // panel (+ its buttons/sliders, unscaled so slider math stays exact) pinned to the bottom, orc fitted in the gap
+ // so his rock only tucks a little behind the panel top (no more cut-off legs/axe).
+ const B=PORTRAIT.base,gw=s.scale.gw,gh=s.scale.gh,si=safeInsets(s),M=PORTRAIT.margin||28,ox=Math.round((gw-B.w)/2),m=Object.assign({},LJ_L);
+ const lg=LJ_P.logo,lt=s.textures.exists(lg.tex)?s.textures.get(lg.tex).getSourceImage():{width:676,height:228};
+ const ls=Math.min(lg.s||1,(gw-2*M-si.l-si.r)/lt.width),lw=lt.width*ls,lx=Math.round(si.l+(gw-si.l-si.r-lw)/2),ly=Math.round(si.t+M+Math.max(0,(gh-B.h)*0.25));
+ const pBottom=gh-si.b-M,pdy=Math.round(pBottom-1016),pTop=690+pdy;
+ const orc=LJ_P.orc_on_rock,ot=s.textures.exists(orc.tex)?s.textures.get(orc.tex).getSourceImage():{width:540,height:448},tuck=PORTRAIT.orcTuck||44;
+ const top=ly+lt.height*ls+6,os=Math.min((orc.s||1)*1.2,(pTop+tuck-top)/ot.height,(gw-2*M)/ot.width),ow=ot.width*os,oxx=Math.round((gw-ow)/2),oyy=Math.round(pTop+tuck-ot.height*os);
+ for(const[k,v]of Object.entries(LJ_P)){if(k[0]==='_')continue;if(typeof v!=='object'){m[k]=v+ox;continue}m[k]=Object.assign({},v);if(v.cover)continue;
+  if(k.startsWith('logo')){m[k].x=lx;m[k].y=ly;m[k].s=ls}else if(k.startsWith('orc')){m[k].x=oxx;m[k].y=oyy;m[k].s=os}
+  else{if('x'in v)m[k].x=v.x+ox;if('y'in v)m[k].y=v.y+pdy}}
  window.LJ=m}
 // safe-area insets in game px
 function safeInsets(s){let d=document.getElementById('safeprobe');if(!d){d=document.createElement('div');d.id='safeprobe';
