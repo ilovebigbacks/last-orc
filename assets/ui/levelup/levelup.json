@@ -1,0 +1,535 @@
+{
+ "scale_hd": 4,
+ "scale_hd2": 2,
+ "files": {
+  "card_c": {
+   "hd": "assets/ui/levelup/card_c_hd.png",
+   "hd2": "assets/ui/levelup/card_c_hd2.png",
+   "hd_size": [
+    720,
+    1040
+   ],
+   "hd2_size": [
+    360,
+    520
+   ],
+   "display": [
+    180,
+    260
+   ]
+  },
+  "card_r": {
+   "hd": "assets/ui/levelup/card_r_hd.png",
+   "hd2": "assets/ui/levelup/card_r_hd2.png",
+   "hd_size": [
+    720,
+    1040
+   ],
+   "hd2_size": [
+    360,
+    520
+   ],
+   "display": [
+    180,
+    260
+   ]
+  },
+  "card_e": {
+   "hd": "assets/ui/levelup/card_e_hd.png",
+   "hd2": "assets/ui/levelup/card_e_hd2.png",
+   "hd_size": [
+    720,
+    1040
+   ],
+   "hd2_size": [
+    360,
+    520
+   ],
+   "display": [
+    180,
+    260
+   ]
+  },
+  "card_focus": {
+   "hd": "assets/ui/levelup/card_focus_hd.png",
+   "hd2": "assets/ui/levelup/card_focus_hd2.png",
+   "hd_size": [
+    720,
+    1040
+   ],
+   "hd2_size": [
+    360,
+    520
+   ],
+   "display": [
+    180,
+    260
+   ]
+  },
+  "panel_levelup": {
+   "hd": "assets/ui/levelup/panel_levelup_hd.png",
+   "hd2": "assets/ui/levelup/panel_levelup_hd2.png",
+   "hd_size": [
+    2480,
+    1320
+   ],
+   "hd2_size": [
+    1240,
+    660
+   ],
+   "display": [
+    620,
+    330
+   ]
+  },
+  "panel_levelup_portrait": {
+   "hd": "assets/ui/levelup/panel_levelup_portrait_hd.png",
+   "hd2": "assets/ui/levelup/panel_levelup_portrait_hd2.png",
+   "hd_size": [
+    960,
+    2240
+   ],
+   "hd2_size": [
+    480,
+    1120
+   ],
+   "display": [
+    240,
+    560
+   ]
+  },
+  "header_levelup": {
+   "hd": "assets/ui/levelup/header_levelup_hd.png",
+   "hd2": "assets/ui/levelup/header_levelup_hd2.png",
+   "hd_size": [
+    1200,
+    344
+   ],
+   "hd2_size": [
+    600,
+    172
+   ],
+   "display": [
+    300,
+    86
+   ]
+  },
+  "pip_empty": {
+   "hd": "assets/ui/levelup/pip_empty_hd.png",
+   "hd2": "assets/ui/levelup/pip_empty_hd2.png",
+   "hd_size": [
+    48,
+    48
+   ],
+   "hd2_size": [
+    24,
+    24
+   ],
+   "display": [
+    12,
+    12
+   ]
+  },
+  "pip_full": {
+   "hd": "assets/ui/levelup/pip_full_hd.png",
+   "hd2": "assets/ui/levelup/pip_full_hd2.png",
+   "hd_size": [
+    48,
+    48
+   ],
+   "hd2_size": [
+    24,
+    24
+   ],
+   "display": [
+    12,
+    12
+   ]
+  },
+  "icon_up_blood_fury": {
+   "hd": "assets/ui/levelup/icon_up_blood_fury_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_blood_fury_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_stone_hide": {
+   "hd": "assets/ui/levelup/icon_up_stone_hide_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_stone_hide_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_iron_skin": {
+   "hd": "assets/ui/levelup/icon_up_iron_skin_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_iron_skin_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_swift_hooves": {
+   "hd": "assets/ui/levelup/icon_up_swift_hooves_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_swift_hooves_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_war_drums": {
+   "hd": "assets/ui/levelup/icon_up_war_drums_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_war_drums_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_bone_magnet": {
+   "hd": "assets/ui/levelup/icon_up_bone_magnet_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_bone_magnet_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_bloodthirst": {
+   "hd": "assets/ui/levelup/icon_up_bloodthirst_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_bloodthirst_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_savage_strikes": {
+   "hd": "assets/ui/levelup/icon_up_savage_strikes_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_savage_strikes_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_thick_blood": {
+   "hd": "assets/ui/levelup/icon_up_thick_blood_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_thick_blood_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_trophy_hunter": {
+   "hd": "assets/ui/levelup/icon_up_trophy_hunter_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_trophy_hunter_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_last_of_the_clan": {
+   "hd": "assets/ui/levelup/icon_up_last_of_the_clan_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_last_of_the_clan_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_berserker_blood": {
+   "hd": "assets/ui/levelup/icon_up_berserker_blood_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_berserker_blood_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_axe_cleave": {
+   "hd": "assets/ui/levelup/icon_up_axe_cleave_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_axe_cleave_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_whirlwind": {
+   "hd": "assets/ui/levelup/icon_up_whirlwind_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_whirlwind_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_war_stomp": {
+   "hd": "assets/ui/levelup/icon_up_war_stomp_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_war_stomp_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "icon_up_rage_roar": {
+   "hd": "assets/ui/levelup/icon_up_rage_roar_hd.png",
+   "hd2": "assets/ui/levelup/icon_up_rage_roar_hd2.png",
+   "hd_size": [
+    256,
+    256
+   ],
+   "hd2_size": [
+    128,
+    128
+   ],
+   "display": [
+    64,
+    64
+   ]
+  },
+  "plate_c": {
+   "hd": "assets/ui/levelup/plate_c_hd.png",
+   "hd2": "assets/ui/levelup/plate_c_hd2.png",
+   "hd_size": [
+    856,
+    360
+   ],
+   "hd2_size": [
+    428,
+    180
+   ],
+   "display": [
+    214,
+    90
+   ],
+   "nineslice": {
+    "left": 12,
+    "right": 12,
+    "top": 12,
+    "bottom": 12,
+    "_unit": "display px (hd=48, hd2=24 source px)"
+   }
+  },
+  "plate_r": {
+   "hd": "assets/ui/levelup/plate_r_hd.png",
+   "hd2": "assets/ui/levelup/plate_r_hd2.png",
+   "hd_size": [
+    856,
+    360
+   ],
+   "hd2_size": [
+    428,
+    180
+   ],
+   "display": [
+    214,
+    90
+   ],
+   "nineslice": {
+    "left": 12,
+    "right": 12,
+    "top": 12,
+    "bottom": 12,
+    "_unit": "display px (hd=48, hd2=24 source px)"
+   }
+  },
+  "plate_e": {
+   "hd": "assets/ui/levelup/plate_e_hd.png",
+   "hd2": "assets/ui/levelup/plate_e_hd2.png",
+   "hd_size": [
+    856,
+    360
+   ],
+   "hd2_size": [
+    428,
+    180
+   ],
+   "display": [
+    214,
+    90
+   ],
+   "nineslice": {
+    "left": 12,
+    "right": 12,
+    "top": 12,
+    "bottom": 12,
+    "_unit": "display px (hd=48, hd2=24 source px)"
+   }
+  },
+  "plate_focus": {
+   "hd": "assets/ui/levelup/plate_focus_hd.png",
+   "hd2": "assets/ui/levelup/plate_focus_hd2.png",
+   "hd_size": [
+    856,
+    360
+   ],
+   "hd2_size": [
+    428,
+    180
+   ],
+   "display": [
+    214,
+    90
+   ],
+   "nineslice": {
+    "left": 12,
+    "right": 12,
+    "top": 12,
+    "bottom": 12,
+    "_unit": "display px (hd=48, hd2=24 source px)"
+   },
+   "_note": "overlay: gold glow rim, transparent centre. Draw on top of plate_<rarity>, same insets, ideally 3 display px larger on each side"
+  }
+ },
+ "card_layout_display": {
+  "note": "approx rects in 180x260 display px",
+  "icon_window": {
+   "card_c": [
+    55,
+    49,
+    73,
+    76
+   ],
+   "card_r": [
+    55,
+    47,
+    70,
+    77
+   ],
+   "card_e": [
+    56,
+    57,
+    68,
+    73
+   ]
+  },
+  "icon_center_y": {
+   "card_c": 87,
+   "card_r": 86,
+   "card_e": 93
+  },
+  "text_panel": [
+   30,
+   140,
+   120,
+   95
+  ],
+  "pip_row_y": 230
+ },
+ "generator": "tools_art/levelup_build.py (+ tools_art/levelup_review.py for review images)"
+}
