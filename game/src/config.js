@@ -9,7 +9,7 @@ window.MENU_PIECES = { background:'background.png', logo:'logo.png', orc_rock:'o
 window.FRAME = { normal:'_normal', hover:'_hover' };
 window.LAYOUT_KEYS = { background:'background', logo:'logo', orc_rock:'orc_on_rock', panel:'panel', panel_options:'panel_options', background_options:'background_options', logo_options:'logo_options', orc_options:'orc_options', cursor:'cursor_skull', cursor_options:'cursor_skull_options',
   button:id=>'button_'+id, track:{music:'slider_track',sfx:'slider_track_sfx'}, handle:{music:'slider_handle',sfx:'slider_handle_sfx'}, fillInner:'slider_fill_inner' };
-window.SLIDER = { trackW:240, fillH:39, handleW:39, handleMin:13, handleMax:180, redEnd:31, capEnd:219 };  // handleMax 180: skull's right edge (180+39=219) stops at the channel end, never over the iron end cap
+window.SLIDER = { trackW:240, fillH:39, handleW:39, handleMin:13, handleMax:199.5, redEnd:31, capEnd:219 };  // handleMax 199.5: skull centre (219) sits at the end of the red channel; right edge 238.5 stays inside the cap's outer edge (240)
 // All relative to the track's x. slider_fill.png red runs cols 21..218 (frame is opaque, no transparent pad).
 // Handle left edge moves handleMin..handleMax. Skull body is opaque at handle cols 8..31 on the bar rows,
 // so fill crop = handle.x - track.x + redEnd: red ends under the skull's right body edge (col 30), full (219) at 100.
@@ -68,4 +68,4 @@ window.BRACKETS={panel:[["corner",25,49.5],["corner",256,49],["corner",25,296],[
  panel_options:[["corner",26,56],["corner",389,56.5],["corner",26,280.5],["corner",388.5,282],["side",20,170.5],["side",396,170.5],["bottom",194,289.5]]};
 
 // bump when art in ../assets/ui changes so browsers/CDNs refetch (appended as ?v=)
-window.ASSET_V='20261026-iron1';
+window.ASSET_V='20261027-slider5';
