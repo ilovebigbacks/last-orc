@@ -33,7 +33,9 @@ function drawBackdrop(s,fb,panelKey){if(!PIECES){s.add.image(W/2,H/2,fb).setDisp
  const bg=pick('background_options','background'),lg=pick('logo_options','logo'),orc=pick('orc_options','orc_rock');
  if(isPortrait(s)&&s.textures.exists('ui_menu_bg_portrait')){const i=s.add.image(s.scale.gw/2,s.scale.gh/2,'ui_menu_bg_portrait');i.setScale(Math.max(s.scale.gw/i.width,s.scale.gh/i.height))}else at(s,K[bg],'menu_'+bg);
  if(s.textures.exists('menu_'+orc)&&LJ[K[orc]]){const o=at(s,K[orc],'menu_'+orc);if(bob)s.tweens.add({targets:o,y:o.y-bob,duration:ORC_BOB.ms,yoyo:true,repeat:-1,ease:'Sine.inOut'})}
- at(s,K[lg],'menu_'+lg);at(s,K[panelKey],'menu_'+panelKey)}
+ at(s,K[lg],'menu_'+lg);const pn=at(s,K[panelKey],'menu_'+panelKey);addBrackets(s,pn,panelKey)}
+// painted HD iron brackets over the panel's old plates (LINEAR, uniform scale)
+function addBrackets(s,pn,key){for(const[t,cx,cy]of(window.BRACKETS&&BRACKETS[key])||[]){const k='ui_bracket_'+t;if(!s.textures.exists(k))continue;const b=uiFit(s.add.image(pn.x+cx*pn.scaleX,pn.y+cy*pn.scaleY,k));b.setScale(b.scaleX*pn.scaleX,b.scaleY*pn.scaleY)}}
 function pieceButton(s,id,cursor,onClick,off,pos){const b=pos?s.add.image(pos.x,pos.y,'menu_buttons',id+FRAME.normal).setOrigin(0):at(s,K.button(id),'menu_buttons',id+FRAME.normal);
  if(off){b.setAlpha(.35).setTint(0x888888);return b}
  b.setInteractive({useHandCursor:true,hitArea:padHit(b.width,b.height),hitAreaCallback:Phaser.Geom.Rectangle.Contains}).on('pointerover',()=>{b.setFrame(id+FRAME.hover);if(cursor)cursor.setVisible(true).setY(b.y+(cursor.off??-7))})

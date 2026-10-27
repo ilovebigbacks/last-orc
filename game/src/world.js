@@ -24,7 +24,7 @@ function safeInsets(s){let d=document.getElementById('safeprobe');if(!d){d=docum
  const cs=getComputedStyle(d),k=(s.scale.displayScale.x||1)/RS,f=p=>Math.ceil((parseFloat(cs[p])||0)*k);
  return {t:f('paddingTop'),r:f('paddingRight'),b:f('paddingBottom'),l:f('paddingLeft')}}
 const UI_MAP={ability_slot:'slot',pause_button:'pause_btn',joy_base:'joy_base',joy_knob:'joy_knob',hud_frame:'hud_frame',hud_portrait_rage:'hud_portrait_rage',hp_bar_frame:'hp_bar_frame',hp_fill:'bar_hp',xp_bar_frame:'xp_bar_frame',xp_fill:'bar_xp',
- icon_axe_cleave:'icon_axe_cleave',icon_whirlwind:'icon_whirlwind',icon_war_stomp:'icon_war_stomp',icon_rage_roar:'icon_rage_roar',panel_pause:'ui_panel_pause',button_home:'ui_button_home',button_home_hover:'ui_button_home_hover',
+ icon_axe_cleave:'icon_axe_cleave',icon_whirlwind:'icon_whirlwind',icon_war_stomp:'icon_war_stomp',icon_rage_roar:'icon_rage_roar',panel_pause:'ui_panel_pause',button_home:'ui_button_home',button_home_hover:'ui_button_home_hover',bracket_corner:'ui_bracket_corner',bracket_side:'ui_bracket_side',bracket_bottom:'ui_bracket_bottom',label_music:'ui_label_music',label_sfx:'ui_label_sfx',label_back:'ui_label_back',label_back_hover:'ui_label_back_hover',label_home:'ui_label_home',label_home_hover:'ui_label_home_hover',
  menu_bg_portrait:'ui_menu_bg_portrait',orc_on_rock_portrait:'ui_orc_on_rock_portrait',fx_vignette_portrait:'fx_vignette_portrait',fx_ember:'fx_ember_single',chip_wave:'chip_wave',chip_timer:'chip_timer'};
 function loadWorldAssets(s){const U='../assets/ui/';for(const[f,k]of Object.entries(UI_MAP)){if(UI_HD[f]){s.load.image(k,U+f+HD_TIER+'.png?v='+ASSET_V);UI_DISP[k]=UI_HD[f]}else s.load.image(k,U+f+'.png?v='+ASSET_V)}
 for(const[k,f]of Object.entries(RAGE.files))if(f)s.load.spritesheet(RAGE.keys[k],f,{frameWidth:RAGE.frameW,frameHeight:RAGE.frameH});
@@ -213,9 +213,11 @@ class Pause extends Phaser.Scene{constructor(){super('Pause')}
   if(window.PIECES){uiFit(this.add.image(px,py,this.textures.exists('ui_panel_pause')?'ui_panel_pause':'menu_panel_options')).setOrigin(0);
    skullSlider(this,'music',px+140,py+99,py+98);skullSlider(this,'sfx',px+140,py+158,py+156);
    const cur=this.add.image(px+48,py+216,'menu_cursor_options').setOrigin(0);cur.off=-6;
-   this.back=pieceButton(this,'back',cur,()=>this.resume(),false,{x:px+96,y:py+222});this.back.on('pointerover',()=>cur.setX(px+48));
-   const HK=this.textures.exists('ui_button_home')?{n:'ui_button_home',h:'ui_button_home_hover'}:{n:'ph_home_normal',h:'ph_home_hover'};const hm=this.home=uiFit(this.add.image(px+262,py+222,HK.n)).setOrigin(0);hm.setInteractive({useHandCursor:true,hitArea:padHitS(hm,84,32),hitAreaCallback:Phaser.Geom.Rectangle.Contains});
-   hm.on('pointerover',()=>{hm.setTexture(HK.h);cur.setPosition(hm.x-46,hm.y-6)}).on('pointerout',()=>hm.setTexture(HK.n)).on('pointerdown',()=>this.goHome())}
+   // MUSIC / SFX / BACK / HOME: one HD lettering set (same font, size, outline, colour)
+   uiFit(this.add.image(px+51,py+97,'ui_label_music')).setOrigin(0);uiFit(this.add.image(px+51,py+156,'ui_label_sfx')).setOrigin(0);
+   const lbtn=(x,k,fn,cx)=>{const b=uiFit(this.add.image(x,py+222,'ui_label_'+k)).setOrigin(0);b.setInteractive({useHandCursor:true,hitArea:padHitS(b,84,32),hitAreaCallback:Phaser.Geom.Rectangle.Contains});
+    b.on('pointerover',()=>{b.setTexture('ui_label_'+k+'_hover');cur.setPosition(cx,py+216)}).on('pointerout',()=>b.setTexture('ui_label_'+k)).on('pointerdown',fn);return b};
+   this.back=lbtn(px+96,'back',()=>this.resume(),px+48);this.home=lbtn(px+262,'home',()=>this.goHome(),px+214)}
   this.input.keyboard.on('keydown-ESC',()=>this.resume());this.input.keyboard.on('keydown-P',()=>this.resume());
   this.scale.on('resize',this.relayout,this);this.events.once('shutdown',()=>this.scale.off('resize',this.relayout,this))}
  relayout(){this.time.delayedCall(0,()=>this.scene.restart())}
