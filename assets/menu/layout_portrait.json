@@ -1,5 +1,5 @@
 {
- "_note": "Portrait 576x1024 base: logo (cropped above debris) top, orc_on_rock_portrait middle with its 60px fade over the horizon/lava band, wood panel lower third over the fade.",
+ "_note": "Portrait 576x1024 base: logo (cropped above debris) top, orc_on_rock_portrait middle with its 60px fade over the horizon/lava band, wood panel lower third over the fade. Logo: clean 2x HD cut-out (logo_portrait_hd.png 1352x381, LINEAR) at s0.33 -> 446px wide, centred.",
  "_base": {
   "w": 576,
   "h": 1024
@@ -23,15 +23,15 @@
   "tex": "ui_orc_on_rock_portrait"
  },
  "logo": {
-  "x": 18,
-  "y": 120,
-  "s": 0.8,
+  "x": 65,
+  "y": 135,
+  "s": 0.33,
   "tex": "menu_logo_portrait"
  },
  "logo_options": {
-  "x": 18,
-  "y": 120,
-  "s": 0.8,
+  "x": 65,
+  "y": 135,
+  "s": 0.33,
   "tex": "menu_logo_portrait"
  },
  "panel": {
